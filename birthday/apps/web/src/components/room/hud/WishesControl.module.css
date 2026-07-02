@@ -1,0 +1,361 @@
+/* Trigger sits in the bottom-left social cluster; matches the other glass buttons
+   but is functional (cursor pointer). */
+.trigger {
+  pointer-events: auto;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  height: 40px;
+  padding: 0 var(--space-3);
+  background: var(--c-panel);
+  border: 1px solid var(--c-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-panel);
+  backdrop-filter: blur(8px);
+  color: var(--c-text);
+  font-family: var(--font-ui);
+  font-size: 13px;
+  cursor: pointer;
+  transition: background 120ms ease-out;
+}
+
+.trigger:hover {
+  background: var(--c-night-600);
+}
+
+.trigger:focus-visible {
+  outline: 2px solid var(--c-lavender-300);
+  outline-offset: 2px;
+}
+
+.triggerLabel {
+  white-space: nowrap;
+}
+
+/* Closes on outside click. Transparent on desktop; dims on mobile. */
+.backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 25;
+  pointer-events: auto;
+  background: transparent;
+}
+
+/* Right-docked overlay (desktop/tablet). */
+.panel {
+  position: fixed;
+  z-index: 30;
+  top: calc(110px + env(safe-area-inset-top, 0px));
+  right: calc(var(--space-4) + env(safe-area-inset-right, 0px));
+  width: min(260px, 78vw);
+  max-height: 60vh;
+  display: flex;
+  flex-direction: column;
+  padding: var(--space-4);
+  pointer-events: auto;
+  background: var(--c-panel);
+  border: 1px solid var(--c-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-modal);
+  backdrop-filter: blur(8px);
+  animation: slideInRight 200ms ease-out;
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(12px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-3);
+}
+
+.title {
+  margin: 0;
+  font-family: var(--font-ui);
+  font-size: 15px;
+  color: var(--c-text);
+}
+
+.close {
+  pointer-events: auto;
+  width: 30px;
+  height: 30px;
+  background: transparent;
+  border: none;
+  color: var(--c-text-2);
+  font-size: 15px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+}
+
+.close:hover {
+  color: var(--c-text);
+}
+
+.close:focus-visible {
+  outline: 2px solid var(--c-lavender-300);
+  outline-offset: 2px;
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  overflow-y: auto;
+  padding-right: var(--space-1);
+  /* Own the panel's scrollable region so the compose form / send button stays
+     pinned at the bottom even as the list grows. */
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.card {
+  background: var(--c-panel-inner);
+  border-radius: var(--radius-md);
+  padding: var(--space-3);
+}
+
+.body {
+  margin: 0 0 var(--space-1);
+  font-family: var(--font-body);
+  font-size: 13px;
+  color: var(--c-text);
+  line-height: 1.45;
+  /* Preserve newlines from the compose textarea; wrap long tokens/emoji. */
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.author {
+  margin: 0;
+  font-family: var(--font-body);
+  font-size: 12px;
+  color: var(--c-pink-300);
+}
+
+.note {
+  margin: var(--space-1) 0 0;
+  font-family: var(--font-body);
+  font-size: 11px;
+  color: var(--c-text-muted);
+  text-align: center;
+}
+
+.send {
+  pointer-events: auto;
+  margin-top: var(--space-3);
+  font-family: var(--font-ui);
+  font-size: 13px;
+  border: none;
+  border-radius: var(--radius-pill);
+  padding: var(--space-2) var(--space-4);
+  color: var(--c-text-on-accent);
+  background: var(--grad-cta);
+  cursor: pointer;
+  transition:
+    transform 120ms ease-out,
+    filter 120ms ease-out;
+}
+
+.send:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.05);
+}
+
+.send:focus-visible {
+  outline: 2px solid var(--c-lavender-300);
+  outline-offset: 2px;
+}
+
+/* Empty state — no guest session yet. */
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-4) var(--space-2);
+  text-align: center;
+}
+
+.emptyText {
+  margin: 0;
+  font-family: var(--font-body);
+  font-size: 13px;
+  color: var(--c-text-2);
+  line-height: 1.5;
+}
+
+.emptyLink {
+  font-family: var(--font-ui);
+  font-size: 12px;
+  color: var(--c-text-neon);
+  text-decoration: none;
+}
+
+.emptyLink:hover {
+  color: var(--c-pink-400);
+}
+
+.emptyLink:focus-visible {
+  outline: 2px solid var(--c-lavender-300);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+/* Compose form (inline, replaces the Send button in the panel footer). */
+.compose {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin-top: var(--space-3);
+}
+
+.textarea {
+  width: 100%;
+  min-height: 76px;
+  resize: none;
+  padding: var(--space-3);
+  background: var(--c-input);
+  border: 1px solid var(--c-border-soft);
+  border-radius: var(--radius-md);
+  color: var(--c-text);
+  font-family: var(--font-body);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.textarea::placeholder {
+  color: var(--c-text-muted);
+}
+
+.textarea:focus-visible {
+  outline: 2px solid var(--c-lavender-300);
+  outline-offset: 1px;
+}
+
+.composeFooter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+
+.counter {
+  font-family: var(--font-body);
+  font-size: 11px;
+  color: var(--c-text-muted);
+}
+
+.counterNear {
+  color: var(--c-gold-400);
+}
+
+.actions {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.cancel {
+  padding: var(--space-2) var(--space-3);
+  background: transparent;
+  border: 1px solid var(--c-border-soft);
+  border-radius: var(--radius-pill);
+  color: var(--c-text-2);
+  font-family: var(--font-ui);
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.cancel:hover {
+  color: var(--c-text);
+  border-color: var(--c-border);
+}
+
+.cancel:focus-visible {
+  outline: 2px solid var(--c-lavender-300);
+  outline-offset: 2px;
+}
+
+.post {
+  padding: var(--space-2) var(--space-4);
+  border: none;
+  border-radius: var(--radius-pill);
+  color: var(--c-text-on-accent);
+  background: var(--grad-cta);
+  font-family: var(--font-ui);
+  font-size: 12px;
+  cursor: pointer;
+  transition:
+    transform 120ms ease-out,
+    filter 120ms ease-out;
+}
+
+.post:hover:not(:disabled) {
+  transform: translateY(-1px);
+  filter: brightness(1.05);
+}
+
+.post:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  filter: saturate(0.7);
+}
+
+.post:focus-visible {
+  outline: 2px solid var(--c-lavender-300);
+  outline-offset: 2px;
+}
+
+.hint {
+  margin: 0;
+  font-family: var(--font-body);
+  font-size: 10px;
+  color: var(--c-text-muted);
+  text-align: right;
+}
+
+@media (max-width: 1024px) {
+  .triggerLabel {
+    display: none;
+  }
+  .panel {
+    width: min(240px, 76vw);
+  }
+}
+
+/* Mobile: bottom sheet with a dimmed backdrop. */
+@media (max-width: 640px) {
+  .backdrop {
+    background: var(--c-overlay);
+  }
+  .panel {
+    top: auto;
+    right: 0;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    max-height: 70vh;
+    border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+    animation: slideUp 220ms ease-out;
+  }
+  @keyframes slideUp {
+    from {
+      opacity: 0;
+      transform: translateY(16px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+}

@@ -1,0 +1,14 @@
+.screen {
+  position: relative;
+  min-height: 100dvh;
+  width: 100%;
+  overflow: hidden;
+}
+
+/* Overlay layer: transparent to clicks; individual panels re-enable pointer events. */
+.hud {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 10;
+}

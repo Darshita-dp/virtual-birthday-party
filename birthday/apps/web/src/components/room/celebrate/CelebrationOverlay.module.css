@@ -1,0 +1,267 @@
+/* Fixed to the viewport BUT clipped above the bottom dock so no particle,
+   sparkle, or shimmer lands over the HUD. Height auto-shrinks with the dock's
+   safe zone; all child positions (%, top/bottom) become relative to this box. */
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 110px; /* desktop bottom-dock safe zone */
+  z-index: 100;
+  pointer-events: none;
+  overflow: hidden;
+  animation: overlayLife 5s ease-in-out both;
+}
+
+@keyframes overlayLife {
+  0% {
+    opacity: 0;
+  }
+  4% {
+    opacity: 1;
+  }
+  92% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+/* Soft golden glow behind the cake area (top band of the screen). */
+.shimmer {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 60vw;
+  height: 55vh;
+  transform: translate(-50%, -18%);
+  background: radial-gradient(
+    closest-side,
+    rgba(255, 226, 160, 0.45),
+    rgba(255, 226, 160, 0.16) 45%,
+    rgba(255, 226, 160, 0) 75%
+  );
+  filter: blur(24px);
+  animation: shimmerPulse 2.6s ease-in-out 0.05s both;
+}
+
+@keyframes shimmerPulse {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -18%) scale(0.9);
+  }
+  40% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -18%) scale(1.1);
+  }
+}
+
+/* Confetti particles fall from just above the viewport and drift + rotate. */
+.particle {
+  position: absolute;
+  top: -40px;
+  border-radius: 2px;
+  will-change: transform, opacity;
+  animation-name: fall;
+  animation-timing-function: cubic-bezier(0.32, 0.15, 0.65, 1);
+  animation-fill-mode: forwards;
+}
+
+@keyframes fall {
+  0% {
+    transform: translate(0, 0) rotate(0deg);
+    opacity: 0;
+  }
+  8% {
+    opacity: 1;
+  }
+  100% {
+    transform: translate(var(--drift, 0), 108vh) rotate(var(--rot, 360deg));
+    opacity: 0.85;
+  }
+}
+
+/* Twinkling star sparkles — brighter, glowier, and repeat during the moment. */
+.sparkle {
+  position: absolute;
+  opacity: 0;
+  will-change: opacity, transform;
+  filter: drop-shadow(0 0 8px rgba(255, 246, 200, 0.85));
+  animation-name: twinkle;
+  animation-timing-function: ease-in-out;
+  animation-fill-mode: both;
+  animation-iteration-count: 2;
+}
+
+@keyframes twinkle {
+  0% {
+    opacity: 0;
+    transform: scale(0.55);
+  }
+  40% {
+    opacity: 1;
+    transform: scale(1.1);
+  }
+  70% {
+    opacity: 0.9;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.6);
+  }
+}
+
+/* Balloons rise from the bottom of the (clipped) overlay to past the top. */
+.balloon {
+  position: absolute;
+  bottom: 0;
+  opacity: 0;
+  will-change: transform, opacity;
+  filter: drop-shadow(0 6px 10px rgba(10, 5, 24, 0.35))
+    drop-shadow(0 0 6px rgba(255, 246, 200, 0.35));
+  animation-name: rise;
+  animation-timing-function: ease-out;
+  animation-fill-mode: both;
+}
+
+@keyframes rise {
+  0% {
+    transform: translate(0, 40px) rotate(0deg);
+    opacity: 0;
+  }
+  8% {
+    opacity: 1;
+  }
+  50% {
+    transform: translate(calc(var(--sway, 0vw) * 0.5), -50vh) rotate(var(--tilt, 0deg));
+    opacity: 1;
+  }
+  92% {
+    opacity: 0.95;
+  }
+  100% {
+    transform: translate(var(--sway, 0vw), -108vh) rotate(calc(var(--tilt, 0deg) * -0.5));
+    opacity: 0;
+  }
+}
+
+/* Middle-of-screen greeting banner. */
+.banner {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  padding: var(--space-4) var(--space-7);
+  background: var(--c-panel);
+  border: 1px solid var(--c-border);
+  border-radius: var(--radius-pill);
+  box-shadow: var(--shadow-modal), var(--glow-pink);
+  backdrop-filter: blur(8px);
+  animation: bannerLife 4.8s ease-out both;
+}
+
+@keyframes bannerLife {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.85);
+  }
+  8% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  88% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, calc(-50% - 6px)) scale(0.96);
+  }
+}
+
+.bannerText {
+  font-family: var(--font-ui);
+  font-size: 22px;
+  background: var(--grad-hero-gold);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  text-shadow: var(--glow-gold);
+  white-space: nowrap;
+}
+
+@media (max-width: 640px) {
+  .overlay {
+    /* Mobile dock is taller once safe-area kicks in — clip higher. */
+    bottom: calc(96px + env(safe-area-inset-bottom, 0px));
+  }
+  .banner {
+    padding: var(--space-3) var(--space-5);
+  }
+  .bannerText {
+    font-size: 16px;
+  }
+  .shimmer {
+    width: 92vw;
+    height: 42vh;
+  }
+}
+
+/* Reduced motion: keep the moment, drop the motion. */
+@media (prefers-reduced-motion: reduce) {
+  .overlay {
+    animation: overlayLifeShort 2.4s ease-in-out both;
+  }
+  @keyframes overlayLifeShort {
+    0% {
+      opacity: 0;
+    }
+    10% {
+      opacity: 1;
+    }
+    80% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 0;
+    }
+  }
+  .shimmer {
+    animation: none;
+    opacity: 0.35;
+  }
+  .particle,
+  .balloon {
+    display: none;
+  }
+  .sparkle {
+    animation: none;
+    opacity: 0.75;
+    transform: scale(1);
+  }
+  .banner {
+    animation: bannerLifeShort 2.4s ease-out both;
+  }
+  @keyframes bannerLifeShort {
+    0% {
+      opacity: 0;
+      transform: translate(-50%, -50%);
+    }
+    12% {
+      opacity: 1;
+      transform: translate(-50%, -50%);
+    }
+    88% {
+      opacity: 1;
+      transform: translate(-50%, -50%);
+    }
+    100% {
+      opacity: 0;
+      transform: translate(-50%, -50%);
+    }
+  }
+}

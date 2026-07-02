@@ -1,0 +1,56 @@
+.marker {
+  position: absolute;
+  transform: translate(-50%, -100%); /* anchor by the feet at (xPct, yPct) */
+  pointer-events: none; /* never blocks room panning */
+}
+
+.sprite {
+  height: 100%;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.spriteImg,
+.pixel {
+  height: 100%;
+  width: auto;
+  display: block;
+  object-fit: contain; /* show the whole sprite, never cropped */
+  image-rendering: pixelated; /* preserve pixel-art clarity */
+}
+
+/* Soft contact shadow so characters feel grounded, not like floating stickers. */
+.shadow {
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  transform: translateX(-50%);
+  width: 66%;
+  height: 7%;
+  background: radial-gradient(closest-side, rgba(10, 5, 24, 0.5), transparent);
+  border-radius: 50%;
+  z-index: -1;
+}
+
+.nameTag {
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  margin-top: 6px;
+  padding: 2px 8px;
+  border-radius: var(--radius-pill);
+  background: rgba(20, 9, 43, 0.62);
+  color: var(--c-text);
+  font-family: var(--font-body);
+  font-size: 12px;
+  line-height: 1.2;
+  white-space: nowrap;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
+}
+
+.hostTag {
+  color: var(--c-text-gold);
+  box-shadow: var(--glow-gold);
+}

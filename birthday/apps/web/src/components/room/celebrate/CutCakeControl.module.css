@@ -1,0 +1,40 @@
+.cutCake {
+  pointer-events: auto;
+  flex: none;
+  height: 40px;
+  padding: 0 var(--space-4);
+  font-family: var(--font-ui);
+  font-size: 14px;
+  letter-spacing: 0.01em;
+  border: none;
+  border-radius: var(--radius-pill);
+  color: var(--c-text-on-accent);
+  background: var(--grad-cta);
+  box-shadow: var(--glow-pink);
+  cursor: pointer;
+  white-space: nowrap;
+  transition:
+    transform 120ms ease-out,
+    filter 120ms ease-out,
+    box-shadow 120ms ease-out;
+}
+
+.cutCake:hover:not(:disabled) {
+  transform: translateY(-1px);
+  filter: brightness(1.05);
+}
+
+.cutCake:active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+.cutCake:disabled {
+  cursor: not-allowed;
+  opacity: 0.75;
+  filter: saturate(0.85);
+}
+
+.cutCake:focus-visible {
+  outline: 2px solid var(--c-lavender-300);
+  outline-offset: 2px;
+}

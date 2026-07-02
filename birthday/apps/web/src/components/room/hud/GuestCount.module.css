@@ -1,0 +1,18 @@
+.count {
+  font-family: var(--font-ui);
+  font-size: 16px;
+  color: var(--c-text);
+}
+
+.label {
+  font-family: var(--font-body);
+  font-size: 11px;
+  color: var(--c-text-2);
+}
+
+/* Match the top bar's compact behavior: hide the label on small screens. */
+@media (max-width: 640px) {
+  .label {
+    display: none;
+  }
+}

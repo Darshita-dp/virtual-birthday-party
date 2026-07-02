@@ -1,0 +1,117 @@
+.titleCard {
+  position: absolute;
+  top: calc(var(--space-4) + env(safe-area-inset-top, 0px));
+  left: calc(var(--space-4) + env(safe-area-inset-left, 0px));
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  max-width: min(60vw, 300px);
+}
+
+.cake {
+  font-size: 18px;
+}
+
+.titleText {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.title {
+  font-family: var(--font-ui);
+  color: var(--c-text);
+  font-size: 13px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.status {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-family: var(--font-body);
+  font-size: 11px;
+  color: var(--c-text-2);
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: var(--radius-pill);
+  background: var(--c-online);
+  box-shadow: 0 0 8px var(--c-online-glow);
+  animation: pulse 1.6s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+.right {
+  position: absolute;
+  top: calc(var(--space-4) + env(safe-area-inset-top, 0px));
+  right: calc(var(--space-4) + env(safe-area-inset-right, 0px));
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.guests {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-1) var(--space-3);
+  height: 40px;
+}
+
+.guestIcon {
+  font-size: 15px;
+}
+
+.guestCount {
+  font-family: var(--font-ui);
+  font-size: 16px;
+  color: var(--c-text);
+}
+
+.guestLabel {
+  font-family: var(--font-body);
+  font-size: 11px;
+  color: var(--c-text-2);
+}
+
+.settings {
+  pointer-events: auto;
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  font-size: 16px;
+  color: var(--c-text);
+  background: var(--c-panel);
+  border: 1px solid var(--c-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-panel);
+  backdrop-filter: blur(8px);
+  cursor: default;
+}
+
+.settings:focus-visible {
+  outline: 2px solid var(--c-lavender-300);
+  outline-offset: 2px;
+}
+
+@media (max-width: 640px) {
+  .guestLabel {
+    display: none;
+  }
+}

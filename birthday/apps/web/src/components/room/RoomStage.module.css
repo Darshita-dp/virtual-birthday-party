@@ -1,0 +1,42 @@
+/* Scroll viewport: fills the screen, scrolls/pans the world beneath the fixed HUD.
+   The night-sky gradient shows behind/around the map (no blank/white gaps). */
+.viewport {
+  position: absolute;
+  inset: 0;
+  overflow: auto;
+  background: var(--grad-sky);
+  -webkit-overflow-scrolling: touch;
+  /* Flex + margin:auto on the world centers it when smaller than the viewport,
+     and resolves to 0 (normal scrolling, no clipping) when larger. */
+  display: flex;
+}
+
+/* World box is sized (via inline style) to natural × scale, so native scrolling
+   matches the zoom level. overflow:hidden keeps the scaled image's untransformed
+   layout box from inflating the scroll area. */
+.world {
+  position: relative;
+  overflow: hidden;
+  flex: none;
+  margin: auto;
+}
+
+/* Scaled layer (origin top-left) holding the room image + in-world characters,
+   so they zoom/pan together. Revealed once the fit scale is computed. */
+.worldInner {
+  position: relative;
+  transform-origin: top left;
+  opacity: 0;
+  transition: opacity 200ms ease-out;
+  will-change: transform;
+}
+
+/* Full room map — fills the scaled layer, aspect preserved, never cropped.
+   Deliberately NOT object-fit: cover. */
+.worldImg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  user-select: none;
+  -webkit-user-drag: none;
+}

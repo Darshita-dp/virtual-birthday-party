@@ -1,0 +1,8 @@
+.panel {
+  background: var(--c-panel);
+  border: 1px solid var(--c-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-panel);
+  backdrop-filter: blur(8px);
+  pointer-events: auto;
+}

@@ -1,0 +1,127 @@
+.card {
+  width: 190px;
+  padding: var(--space-2) var(--space-3);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+.icon {
+  color: var(--c-text-2);
+  font-size: 14px;
+  line-height: 1;
+  transition: color 200ms ease-out;
+}
+
+.playing .icon {
+  color: var(--c-pink-400);
+  animation: musicPulse 1.6s ease-in-out infinite;
+}
+
+@keyframes musicPulse {
+  0%,
+  100% {
+    opacity: 0.55;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+.title {
+  flex: 1;
+  min-width: 0;
+  font-family: var(--font-body);
+  font-size: 12px;
+  color: var(--c-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Primary play/pause control — accented while Paused so it invites the click. */
+.play {
+  pointer-events: auto;
+  width: 30px;
+  height: 30px;
+  flex: none;
+  display: grid;
+  place-items: center;
+  background: var(--grad-cta);
+  color: var(--c-text-on-accent);
+  border: none;
+  border-radius: var(--radius-pill);
+  font-size: 12px;
+  line-height: 1;
+  cursor: pointer;
+  box-shadow: var(--glow-pink);
+  transition:
+    background 160ms ease-out,
+    box-shadow 160ms ease-out,
+    transform 120ms ease-out,
+    filter 120ms ease-out,
+    color 160ms ease-out;
+}
+
+.play:hover:not(:disabled) {
+  transform: translateY(-1px);
+  filter: brightness(1.05);
+}
+
+.play:active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+.play:disabled {
+  cursor: not-allowed;
+  background: transparent;
+  color: var(--c-text-muted);
+  box-shadow: none;
+}
+
+.play:focus-visible {
+  outline: 2px solid var(--c-lavender-300);
+  outline-offset: 2px;
+}
+
+/* While playing the Play button softens (ambient state, not the CTA). */
+.playing .play {
+  background: transparent;
+  color: var(--c-text);
+  box-shadow: none;
+}
+
+.playing .play:hover:not(:disabled) {
+  background: var(--c-night-600);
+}
+
+/* Slim progress rail at the bottom of the card. */
+.progressTrack {
+  height: 2px;
+  border-radius: var(--radius-pill);
+  background: var(--c-night-700);
+  overflow: hidden;
+}
+
+.progressFill {
+  display: block;
+  height: 100%;
+  background: var(--grad-cta);
+  transition: width 200ms linear;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .playing .icon {
+    animation: none;
+  }
+  .progressFill {
+    transition: none;
+  }
+}
