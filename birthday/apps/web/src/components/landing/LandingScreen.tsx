@@ -2,11 +2,8 @@
 
 import { useCallback, useState } from "react";
 import { useRouter } from "next/navigation";
-import { useAudioUnlock } from "@/hooks/useAudioUnlock";
 import { readSession, saveSession } from "@/hooks/useGuestSession";
 import { ROUTES } from "@/lib/routes";
-import { Clouds } from "./Clouds";
-import { StarField } from "./StarField";
 import { InvitationCard } from "./InvitationCard";
 import { RsvpModal } from "./RsvpModal";
 import styles from "./LandingScreen.module.css";
@@ -14,13 +11,13 @@ import styles from "./LandingScreen.module.css";
 const FADE_MS = 280;
 
 /**
- * Invitation landing orchestrator: first-click audio unlock, the RSVP flow
- * (name + avatar, saved to localStorage), a smooth fade-out, and navigation to
- * the birthday-room route.
+ * Invitation landing (M10). Renders the full pixel-art scene as a single
+ * background image (`/landing/landing-bg.png`) and overlays only the functional
+ * buttons + a small date/info row. RSVP + fade + navigation orchestration is
+ * unchanged.
  */
 export function LandingScreen() {
   const router = useRouter();
-  const { unlocked } = useAudioUnlock();
   const [leaving, setLeaving] = useState(false);
   const [rsvpOpen, setRsvpOpen] = useState(false);
   const [initialName, setInitialName] = useState("");
@@ -67,14 +64,21 @@ export function LandingScreen() {
   );
 
   return (
-    <main className={styles.screen}>
-      <Clouds />
-      <StarField />
-      <InvitationCard
-        audioUnlocked={unlocked}
-        onAccept={openRsvp}
-        onAlreadyAccepted={handleAlreadyAccepted}
-      />
+    <main className={styles.stage}>
+      <div className={styles.frame}>
+        {/* Large single-scene background — pixel-art illustration includes the
+            wordmark and invitation copy; kept as a plain <img> so Next's
+            optimizer doesn't rescale/reencode the pixel art. */}
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src="/landing/landing-bg.png"
+          alt="Darshita's Birthday Party — you're invited to a magical birthday bash"
+          className={styles.bg}
+          decoding="async"
+        />
+        <InvitationCard onAccept={openRsvp} onAlreadyAccepted={handleAlreadyAccepted} />
+      </div>
+
       <RsvpModal
         open={rsvpOpen}
         initialName={initialName}

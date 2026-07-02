@@ -1,140 +1,138 @@
-.card {
-  position: relative;
-  z-index: 10;
-  width: min(620px, 100%);
-  text-align: center;
-  background: var(--c-panel);
-  border: 1px solid var(--c-border);
-  border-radius: var(--radius-xl);
-  box-shadow: var(--shadow-modal);
-  backdrop-filter: blur(8px);
-  padding: var(--space-7) var(--space-6);
-  animation: cardIn 220ms ease-out both;
+/* Overlay sits inside the aspect-ratio frame; only the buttons receive input. */
+.overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
 }
 
-@keyframes cardIn {
-  from {
-    opacity: 0;
-    transform: translateY(4px) scale(0.96);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-}
-
-.starRow {
-  font-size: 18px;
-  letter-spacing: 0.4em;
-  color: var(--c-lavender-300);
-  margin-bottom: var(--space-4);
-}
-
-.kicker {
-  margin: 0 0 var(--space-5);
-  font-family: var(--font-ui);
-  font-size: 12px;
-  letter-spacing: 0.08em;
-  color: var(--c-text-neon);
-}
-
-.wordmark {
+/* Small date / status line just above the buttons.
+   Tunable position: change `bottom` to move up/down inside the frame. */
+.dateRow {
+  position: absolute;
+  left: 50%;
+  bottom: 36%;
+  transform: translateX(-50%);
   margin: 0;
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-2);
-  font-family: var(--font-hero);
-  line-height: 1.25;
-}
-
-.line1 {
-  font-size: clamp(28px, 6vw, 52px);
-  background: var(--grad-hero-gold);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-}
-
-.line2 {
-  font-size: clamp(20px, 4.6vw, 40px);
-  color: var(--c-text-neon);
-  text-shadow: var(--glow-pink);
-}
-
-.subtitle {
-  margin: var(--space-5) 0 0;
+  padding: 4px 12px;
+  /* Readable sans (Nunito) so "15" reads as 15, not "1S" like it did in the
+     pixel face. Kept lavender + soft white glow to match the theme. */
   font-family: var(--font-body);
-  font-size: 16px;
-  color: var(--c-text-2);
+  font-weight: 600;
+  font-size: clamp(12px, 1.5vw, 15px);
+  letter-spacing: 0.04em;
+  color: var(--c-lavender-200);
+  text-shadow:
+    0 0 8px rgba(255, 255, 255, 0.35),
+    0 1px 2px rgba(10, 5, 24, 0.6);
+  white-space: nowrap;
+  pointer-events: none;
 }
 
+/* Button row.
+   Tunable position: change `bottom` to move up/down inside the frame. */
 .actions {
+  position: absolute;
+  left: 50%;
+  bottom: 22%;
+  transform: translateX(-50%);
   display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: var(--space-4);
-  margin: var(--space-6) 0 var(--space-4);
+  gap: clamp(12px, 2vw, 24px);
+  pointer-events: none; /* container is inert; buttons re-enable */
 }
 
+/* ── Shared button base ─────────────────────────────────────────── */
 .accept,
 .already {
-  font-family: var(--font-ui);
-  font-size: 16px;
-  border: none;
-  border-radius: var(--radius-pill);
-  padding: var(--space-3) var(--space-6);
-  min-height: 44px;
-  color: var(--c-text-on-accent);
+  pointer-events: auto;
   cursor: pointer;
+  font-family: var(--font-ui);
+  font-size: clamp(12px, 1.4vw, 15px);
+  letter-spacing: 0.02em;
+  padding: clamp(10px, 1.6vw, 14px) clamp(18px, 2.6vw, 30px);
+  min-height: 44px;
+  min-width: 96px;
+  color: #ffffff;
+  border: 2px solid var(--c-gold-500);
+  border-radius: 10px;
+  text-shadow: 0 1px 0 rgba(10, 5, 24, 0.55);
   transition:
     transform 120ms ease-out,
-    box-shadow 120ms ease-out,
+    box-shadow 160ms ease-out,
     filter 120ms ease-out;
 }
 
+/* ── Accept Invite — bright glowing pink ────────────────────────── */
 .accept {
-  background: var(--grad-cta);
-  box-shadow: var(--glow-pink);
-}
-
-.already {
-  background: var(--grad-secondary);
-}
-
-.accept:hover,
-.already:hover {
-  transform: translateY(-1px);
-  filter: brightness(1.05);
+  background: linear-gradient(180deg, #ff8fc6 0%, #e85a9b 100%);
+  box-shadow:
+    0 0 14px rgba(255, 120, 180, 0.65),
+    0 0 28px rgba(244, 201, 91, 0.4),
+    inset 0 -3px 0 rgba(0, 0, 0, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.25);
 }
 
 .accept:hover {
-  box-shadow: var(--glow-pink), var(--shadow-sm);
+  transform: translateY(-1px);
+  filter: brightness(1.06);
+  box-shadow:
+    0 0 20px rgba(255, 120, 180, 0.85),
+    0 0 36px rgba(244, 201, 91, 0.55),
+    inset 0 -3px 0 rgba(0, 0, 0, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.25);
 }
 
-.accept:active,
+.accept:active {
+  transform: translateY(1px);
+}
+
+/* ── Accepted — purple ──────────────────────────────────────────── */
+.already {
+  background: linear-gradient(180deg, #8a66e0 0%, #5a3da6 100%);
+  box-shadow:
+    0 0 14px rgba(138, 102, 224, 0.55),
+    0 0 24px rgba(244, 201, 91, 0.3),
+    inset 0 -3px 0 rgba(0, 0, 0, 0.22),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.already:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.06);
+  box-shadow:
+    0 0 20px rgba(138, 102, 224, 0.75),
+    0 0 32px rgba(244, 201, 91, 0.4),
+    inset 0 -3px 0 rgba(0, 0, 0, 0.22),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
 .already:active {
   transform: translateY(1px);
 }
 
+/* ── Keyboard focus ─────────────────────────────────────────────── */
 .accept:focus-visible,
 .already:focus-visible {
-  outline: 2px solid var(--c-lavender-300);
-  outline-offset: 2px;
+  outline: 3px solid var(--c-lavender-300);
+  outline-offset: 3px;
 }
 
-.helper {
-  margin: 0;
-  font-family: var(--font-body);
-  font-size: 13px;
-  color: var(--c-text-muted);
-}
-
-@media (max-width: 420px) {
+/* ── Mobile portrait tightening ─────────────────────────────────── */
+@media (max-width: 640px) {
   .actions {
-    flex-direction: column;
+    gap: 10px;
   }
+  .dateRow {
+    font-size: 11px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
   .accept,
   .already {
-    width: 100%;
+    transition: none;
+  }
+  .accept:hover,
+  .already:hover {
+    transform: none;
   }
 }
