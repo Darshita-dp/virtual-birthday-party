@@ -29,6 +29,10 @@ export default tseslint.config(
     rules: {
       ...next.configs.recommended.rules,
       ...next.configs["core-web-vitals"].rules,
+      // Pages-Router-only rule; this app is App-Router-only (apps/web/app/**),
+      // no `pages/` directory exists. Left enabled it errors with
+      // "Pages directory cannot be found at …" when lint runs from repo root.
+      "@next/next/no-html-link-for-pages": "off",
     },
   },
 );
