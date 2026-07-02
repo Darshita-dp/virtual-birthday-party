@@ -1,90 +1,126 @@
-# Darshita's Virtual Birthday
+# Darshita's Virtual Birthday ✨
 
-A cozy, dreamy **pixel-art birthday venue**. Guests arrive through an invitation
-link, RSVP with a name + avatar, then enter a scrollable birthday garden where
-the birthday girl stands in front of the cake. Guests can leave wishes on the
-wall, celebrate with a burst of confetti + balloons, and listen to a lo-fi
-ambient track — all locally, no backend required.
+> A cozy, dreamy **pixel-art birthday venue** built for the web. Accept the
+> invitation, choose an avatar, leave a wish, and celebrate with confetti,
+> balloons, and lo-fi music.
 
-> **🌐 Live demo:** <https://virtual-birthday-party-5abxpque0.vercel.app/>
+**🌐 Live demo:** <https://virtual-birthday-party-mu.vercel.app>
+**📸 Screenshots:** [see below](#screenshots)
+**📚 Design docs:** [PRD](PRD.md) · [Architecture](ARCHITECTURE.md) · [Design System](DESIGN_SYSTEM.md) · [Asset Bible](ASSET_BIBLE.md)
 
-> **Status: M0 → M7b shipped, deployed on Vercel (frontend-only).** The
-> multiplayer and persistence milestones (Colyseus realtime + Supabase) are
-> designed in the planning docs but intentionally deferred — the current build
-> stores identity and wishes in `localStorage` and does not require any server.
+---
 
-## Planning docs (source of truth)
+## Highlights
 
-| Doc | What it defines |
-|---|---|
-| [PRD.md](PRD.md) | Product vision, journey, features, requirements |
-| [ARCHITECTURE.md](ARCHITECTURE.md) | Stack, layers, schema, realtime, scaling |
-| [DESIGN_SYSTEM.md](DESIGN_SYSTEM.md) | Colors, type, components, rules |
-| [ASSET_BIBLE.md](ASSET_BIBLE.md) | Assets, naming, dimensions, pipeline |
+- 🎨 **Fully original visual identity.** A magical purple-night pixel garden — 400+
+  lines of design tokens, three self-hosted fonts, and a locked palette.
+- 🕹 **Interactive world, not a static page.** Scrollable/zoomable room, pan with
+  wheel or trackpad, Ctrl/pinch to zoom; fixed HUD stays out of the way.
+- 💌 **Real, honest interactions.** RSVP with name + avatar (15 hand-cropped
+  transparent-PNG choices), leave wishes that persist in `localStorage`, and
+  trigger a portalled celebration overlay (confetti + 20 pastel balloons +
+  sparkles + shimmer + banner).
+- 🎵 **Ambient music player** with autoplay attempt, silent fallback, live
+  progress bar, and graceful "Unavailable" state if the file is missing.
+- 🛠 **Production-shaped monorepo.** pnpm + Turborepo, Next.js 15 App Router,
+  React 19, strict TypeScript, ESLint flat config, Vercel deploy.
+- 📄 **Design-first workflow.** Every visual and architectural decision is
+  captured in four planning docs before code, then executed milestone-by-
+  milestone (M0 → M8) with locked scope.
 
-## What's built (M0 → M7b)
+## Screenshots
 
-- **M0 Foundations** — pnpm + Turborepo monorepo, Next.js 15 + React 19 + TS,
-  design tokens (`tokens.css`), fonts (Press Start 2P / Pixelify Sans / Nunito),
-  asset & Supabase skeletons.
-- **M1 Landing** — invitation card, drifting clouds, twinkling stars, Accept /
-  Already Accepted, first-click audio unlock, fade transition to `/party`.
-- **M2 Static Room** — full room background (no crop), responsive
-  fit-to-width camera with Ctrl / trackpad-pinch zoom, native pan, fixed HUD.
-- **M3 Host Placement** — Darshita rendered from a real transparent PNG in front
-  of the cake, feet-anchored, with a name tag.
-- **M4a Avatar Catalog + RSVP** — 15 cropped RGBA avatar PNGs, RSVP modal (name
-  + avatar picker), local session persisted to `localStorage`.
-- **M4b Local Guest Rendering** — the current guest's chosen avatar appears in
-  the room alongside Darshita. No fake sample guests.
-- **M5 Cake Moment** — Celebrate button portalled above the room: confetti,
-  20 pastel sparkly balloons rising from the floor, twinkling sparkles, gold
-  shimmer, centered "Happy Birthday Darshita! ✨" banner. Cooldown, reduced-
-  motion honored, HUD stays clean.
-- **M6 Birthday Wishes** — real, locally-persisted wishes wall with inline
-  compose form, 280-char limit, live counter, Ctrl / Cmd + Enter to post,
-  cross-tab sync via storage events. No fake wishes.
-- **M7 / M7b Music / Ambience** — compact mini music player card with autoplay
-  attempt (silent fallback + one-shot gesture retry), live progress bar,
-  play/pause, loop, graceful "Unavailable" state if the file is missing.
+<!-- Drop PNGs into docs/screenshots/ with these filenames and they'll render. -->
 
-Honest guest count (**0 Guests Joined** / **1 Guest Joined**) reflects the
-actual local session — no inflated numbers.
+| Landing | RSVP | Room |
+|---|---|---|
+| ![landing](docs/screenshots/01-landing.png) | ![rsvp](docs/screenshots/02-rsvp.png) | ![room](docs/screenshots/03-room.png) |
 
-## Monorepo layout
+| Wishes | Celebrate | Music |
+|---|---|---|
+| ![wishes](docs/screenshots/04-wishes.png) | ![celebrate](docs/screenshots/05-celebrate.png) | ![music](docs/screenshots/06-music.png) |
+
+## Tech Stack
+
+- **Framework:** Next.js 15 (App Router) · React 19 · TypeScript (strict)
+- **Styling:** CSS Modules + design tokens (CSS custom properties) — no Tailwind
+- **Fonts:** `next/font` self-hosting Press Start 2P, Pixelify Sans, Nunito
+- **State:** React hooks + `localStorage` (guest session, wishes) — cross-tab
+  sync via `storage` events
+- **Media:** portalled celebration overlay (`ReactDOM.createPortal`),
+  `HTMLAudioElement` wrapped in a custom hook with `AbortController`-based
+  teardown
+- **Monorepo:** pnpm workspace + Turborepo (`apps/*`, `packages/*`)
+- **Deployment:** Vercel (frontend-only, no env vars required)
+- **Tooling:** ESLint flat config + Next plugin, Prettier
+
+## Features
+
+**Entry**
+- Invitation landing with drifting SVG clouds, twinkling stars, first-click
+  audio unlock, and a smooth fade transition to the room.
+- RSVP modal with a live-search-free 15-avatar grid, name validation, and
+  Enter-to-continue.
+
+**Room**
+- Full room background rendered at natural resolution — never cropped.
+- Camera with fit-width minimum zoom (no dark side gaps) and Ctrl/pinch zoom-in
+  toward the cursor.
+- Darshita anchored in front of the cake as the fixed host; the current guest's
+  chosen avatar appears on the plaza.
+- Honest "0 / 1 Guest Joined" counter tied to the actual local session.
+
+**Social**
+- Wishes wall with inline compose (280-char limit, live counter, Ctrl/Cmd + Enter
+  to post), duplicate-guard, cross-tab sync.
+- Real wishes only — no seeded fake content.
+
+**Celebration**
+- Portalled fullscreen overlay: 20 pastel balloons rising, 36 twinkling
+  sparkles, edge-biased confetti, golden shimmer, centered banner.
+- Dock-clip zone keeps effects off the HUD; `pointer-events: none` never
+  swallows clicks.
+
+**Music**
+- Compact 190×50px mini player card with autoplay attempt + one-shot gesture
+  fallback + live progress rail.
+- Graceful "Unavailable" state when the audio file is missing — no crash, no
+  console noise.
+
+## Architecture
+
+Client-only for now. All state (guest session, wishes, music preference) lives
+in the browser's `localStorage`, so the site works entirely without a backend.
+Realtime, presence, and DB persistence are **designed** in [ARCHITECTURE.md](ARCHITECTURE.md)
+and scoped for later milestones (Colyseus + Supabase).
 
 ```
 apps/
-  web/         Next.js (App Router) — shell, UI, room, HUD (DEPLOYED)
-  server/      Colyseus realtime server — scaffolded, not deployed yet
+  web/          Next.js (App Router) — shipped to Vercel
+  server/       Colyseus realtime server — scaffolded, not deployed yet
 packages/
-  config/      @dvb/config   — event, world, realtime tunables
-  protocol/    @dvb/protocol — shared event names + payload types
-supabase/      DB migrations — placeholder until backend milestones
-art/           source art (built assets emit to apps/web/public/assets)
-scripts/       tooling (e.g. scripts/avatars-remove-bg.py)
+  config/       @dvb/config   — event, world, realtime tunables
+  protocol/     @dvb/protocol — shared event names + payload types
+supabase/       DB migrations placeholder
+art/            source art (built assets emit to apps/web/public/assets)
+docs/           screenshots + supporting media
+scripts/        tooling (e.g. avatars-remove-bg.py)
 ```
-
-## Prerequisites
-
-- **Node ≥ 22** (see `.nvmrc`; `package.json` engines: `>=22 <25`)
-- **pnpm 9** (`corepack enable` then `corepack prepare pnpm@9.12.3 --activate`)
-
-> **Windows + OneDrive:** keep this repo **outside** your OneDrive folder (e.g.
-> `C:\dev\birthday`). OneDrive syncing `node_modules` / `.next` / `.turbo`
-> causes file locks and slow installs.
 
 ## Getting started
 
+**Prerequisites:** Node ≥ 22 (see `.nvmrc`), pnpm 9 (`corepack enable`).
+
 ```bash
+git clone https://github.com/<you>/virtual-birthday-party.git
+cd virtual-birthday-party
 pnpm install
 pnpm dev
 ```
 
-- Web app → <http://localhost:3000>
-- Realtime server (health only, not deployed) → <http://localhost:2567/health>
+Then open <http://localhost:3000>.
 
-## Scripts
+### Scripts
 
 | Command | Description |
 |---|---|
@@ -93,41 +129,50 @@ pnpm dev
 | `pnpm typecheck` | Type-check the whole workspace |
 | `pnpm lint` | ESLint (flat config) across the repo |
 | `pnpm format` | Prettier write |
-| `pnpm assets:build` | Asset pipeline (placeholder until real art tooling lands) |
-
-## Environment
-
-Copy `.env.example` to set values. **Nothing is required to run the current
-web app** — the variables are placeholders for realtime and Supabase, which
-are wired up in later milestones.
 
 ## Deployment
 
-The web app deploys to **Vercel** from `apps/web`:
+Deployed to **Vercel** from `apps/web`.
 
 - **Root Directory:** `apps/web`
 - **Framework:** Next.js (auto-detected)
-- **Install / Build / Output:** defaults (Vercel uses `pnpm install` + `next build`)
-- **Environment variables:** none required for the current milestones
+- **Install / Build / Output:** defaults (pnpm install + `next build`)
+- **Environment variables:** none required
 - **Node.js Version:** 22.x
 
-Live demo: <https://virtual-birthday-party-5abxpque0.vercel.app/>
+## Design decisions
 
-## Roadmap
+- **Local-first shipping order.** Backend and multiplayer are designed but
+  intentionally deferred, so the visual, interaction, and asset work could be
+  polished end-to-end without waiting on infrastructure.
+- **No fake data.** No seeded sample wishes or fake guest counts — everything on
+  screen reflects real local state. The "1 Guest Joined" counter, the current
+  avatar in the room, and the wishes wall all read directly from `localStorage`.
+- **Design-doc-driven milestones.** Each milestone (M0 → M8) begins with an
+  approved plan (files to create/modify, why, risks), avoids scope creep, and
+  ends with locked surface. See the four planning docs above.
+- **Preserve pixel character.** Sprite backgrounds cleaned to real alpha
+  transparency via a custom edge-flood-fill pass (`scripts/avatars-remove-bg.py`)
+  rather than a global white-key that would eat highlights.
 
-Shipped: **M0** → **M1** → **M2** → **M3** → **M4a** → **M4b** → **M5** →
-**M6** → **M7 / M7b** → **M8 Deployment** (this milestone).
+## Roadmap / current limitations
 
-Next (deferred, designed in docs):
-- Real multi-user realtime (Colyseus room, presence, movement).
+Shipped: **M0 Foundations · M1 Landing · M2 Room + camera · M3 Host placement ·
+M4a RSVP + avatar picker · M4b Local guest rendering · M5 Cake Moment ·
+M6 Birthday Wishes · M7 / M7b Music player · M8 Vercel deployment ·
+M9 Portfolio polish + share previews.**
+
+Deferred (designed in the docs):
+- Real multi-user presence and movement (Colyseus room).
 - Server-persisted wishes and RSVPs (Supabase).
-- Host role + secret host-link controls.
+- Host role via a secret host link.
 - Additional in-room affordances (chat, emotes, dance, photo, map).
 
-## Conventions
+## Credits
 
-- Pixel art is canonical (v1); anime style excluded.
-- Pixel fonts for headings / chips / buttons / counters; **Nunito** for body,
-  chat, wishes.
-- Design values come from `apps/web/src/styles/tokens.css` (mirrors DESIGN_SYSTEM.md).
-- Shared types / contracts live in `@dvb/protocol`; tunables in `@dvb/config`.
+- Fonts: Press Start 2P, Pixelify Sans, Nunito (Google Fonts, self-hosted via `next/font`).
+- Ambient audio: royalty-free lo-fi loop (place a `lofi-birthday.mp3` at
+  `apps/web/public/assets/audio/`).
+- Character art: original pixel-art sprites cropped and cleaned in this repo.
+
+Built end-to-end as a portfolio project. Feedback welcome.
