@@ -1,26 +1,45 @@
-/* Trigger sits in the bottom-left social cluster; matches the other glass buttons
-   but is functional (cursor pointer). */
+/* Trigger matches the "+ Send a Wish" / "Post" pink gradient (same family as
+   Celebrate), sized down and slightly transparent so it sits lighter in the
+   dock. */
 .trigger {
   pointer-events: auto;
   display: flex;
   align-items: center;
-  gap: var(--space-2);
-  height: 40px;
+  justify-content: center;
+  gap: 6px;
+
+  height: 34px;
   padding: 0 var(--space-3);
-  background: var(--c-panel);
-  border: 1px solid var(--c-border);
-  border-radius: var(--radius-md);
-  box-shadow: var(--shadow-panel);
-  backdrop-filter: blur(8px);
-  color: var(--c-text);
-  font-family: var(--font-ui);
+
+  border-radius: 12px;
+  border: 1.5px solid rgba(244, 201, 91, 0.55);
+
+  background: linear-gradient(180deg, rgba(255, 157, 200, 0.82) 0%, rgba(196, 155, 240, 0.82) 100%);
+
+  color: var(--c-text-on-accent);
+  font-family: var(--font-body);
   font-size: 13px;
+  font-weight: 600;
+  font-style: italic;
+  letter-spacing: 0.04em;
+
+  box-shadow: 0 0 8px rgba(255, 120, 180, 0.35);
+
   cursor: pointer;
-  transition: background 120ms ease-out;
+  transition:
+    transform 0.18s ease,
+    box-shadow 0.18s ease,
+    filter 0.18s ease;
 }
 
 .trigger:hover {
-  background: var(--c-night-600);
+  transform: translateY(-1px);
+  filter: brightness(1.05);
+  box-shadow: 0 0 12px rgba(255, 120, 180, 0.5);
+}
+
+.trigger:active {
+  transform: translateY(1px) scale(0.98);
 }
 
 .trigger:focus-visible {
@@ -41,13 +60,14 @@
   background: transparent;
 }
 
-/* Right-docked overlay (desktop/tablet). */
+/* Right-docked overlay (desktop/tablet). Narrower + nudged in from the edge
+   (M13a) so it feels less dominant. */
 .panel {
   position: fixed;
   z-index: 30;
   top: calc(110px + env(safe-area-inset-top, 0px));
-  right: calc(var(--space-4) + env(safe-area-inset-right, 0px));
-  width: min(260px, 78vw);
+  right: calc(var(--space-5) + env(safe-area-inset-right, 0px));
+  width: min(230px, 74vw);
   max-height: 60vh;
   display: flex;
   flex-direction: column;
@@ -325,11 +345,10 @@
 }
 
 @media (max-width: 1024px) {
-  .triggerLabel {
-    display: none;
-  }
+  /* No icon fallback anymore (emoji removed) — keep the text label visible
+     so the trigger is never empty. */
   .panel {
-    width: min(240px, 76vw);
+    width: min(210px, 72vw);
   }
 }
 

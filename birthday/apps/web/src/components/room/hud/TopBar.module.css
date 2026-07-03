@@ -4,13 +4,8 @@
   left: calc(var(--space-4) + env(safe-area-inset-left, 0px));
   display: flex;
   align-items: center;
-  gap: var(--space-2);
   padding: var(--space-2) var(--space-3);
-  max-width: min(60vw, 300px);
-}
-
-.cake {
-  font-size: 18px;
+  max-width: min(42vw, 170px);
 }
 
 .titleText {
@@ -20,9 +15,12 @@
 }
 
 .title {
-  font-family: var(--font-ui);
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-style: italic;
+  letter-spacing: 0.02em;
   color: var(--c-text);
-  font-size: 13px;
+  font-size: 12px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -31,9 +29,12 @@
 .status {
   display: flex;
   align-items: center;
-  gap: var(--space-2);
+  gap: var(--space-1);
   font-family: var(--font-body);
-  font-size: 11px;
+  font-weight: 500;
+  font-style: italic;
+  letter-spacing: 0.02em;
+  font-size: 10px;
   color: var(--c-text-2);
 }
 
@@ -59,59 +60,19 @@
 .right {
   position: absolute;
   top: calc(var(--space-4) + env(safe-area-inset-top, 0px));
-  right: calc(var(--space-4) + env(safe-area-inset-right, 0px));
+  right: calc(var(--space-6) + env(safe-area-inset-right, 0px));
   display: flex;
   align-items: center;
-  gap: var(--space-2);
 }
 
 .guests {
   display: flex;
   align-items: center;
   gap: var(--space-2);
-  padding: var(--space-1) var(--space-3);
+  padding: var(--space-1) var(--space-2);
   height: 40px;
 }
 
 .guestIcon {
   font-size: 15px;
-}
-
-.guestCount {
-  font-family: var(--font-ui);
-  font-size: 16px;
-  color: var(--c-text);
-}
-
-.guestLabel {
-  font-family: var(--font-body);
-  font-size: 11px;
-  color: var(--c-text-2);
-}
-
-.settings {
-  pointer-events: auto;
-  width: 40px;
-  height: 40px;
-  display: grid;
-  place-items: center;
-  font-size: 16px;
-  color: var(--c-text);
-  background: var(--c-panel);
-  border: 1px solid var(--c-border);
-  border-radius: var(--radius-md);
-  box-shadow: var(--shadow-panel);
-  backdrop-filter: blur(8px);
-  cursor: default;
-}
-
-.settings:focus-visible {
-  outline: 2px solid var(--c-lavender-300);
-  outline-offset: 2px;
-}
-
-@media (max-width: 640px) {
-  .guestLabel {
-    display: none;
-  }
 }

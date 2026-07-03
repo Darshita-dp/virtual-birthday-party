@@ -1,6 +1,8 @@
 import type { Metadata, Viewport } from "next";
 import type { ReactNode } from "react";
 import { fontDisplay, fontNunito, fontPixel } from "@/fonts/fonts";
+import { MusicProvider } from "@/providers/MusicProvider";
+import { SfxProvider } from "@/providers/SfxProvider";
 import "./globals.css";
 
 const SITE_URL = "https://virtual-birthday-party-mu.vercel.app";
@@ -51,7 +53,11 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
       lang="en"
       className={`${fontDisplay.variable} ${fontPixel.variable} ${fontNunito.variable}`}
     >
-      <body>{children}</body>
+      <body>
+        <MusicProvider>
+          <SfxProvider>{children}</SfxProvider>
+        </MusicProvider>
+      </body>
     </html>
   );
 }

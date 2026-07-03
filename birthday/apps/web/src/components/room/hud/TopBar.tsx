@@ -3,18 +3,19 @@ import { Panel } from "../../ui/Panel";
 import { GuestCount } from "./GuestCount";
 import styles from "./TopBar.module.css";
 
-/** Top-left title card + top-right guest count and settings (placeholders). */
+/**
+ * Top-left title/status card + top-right Joined tile (M13a).
+ * Viewer/Joined counts become real cross-visitor totals in M13b (Supabase);
+ * until then these stay honest placeholders — never a fake global number.
+ */
 export function TopBar() {
   return (
     <>
       <Panel className={styles.titleCard}>
-        <span className={styles.cake} aria-hidden>
-          🎂
-        </span>
         <span className={styles.titleText}>
           <span className={styles.title}>{EVENT.title}</span>
           <span className={styles.status}>
-            <span className={styles.dot} aria-hidden /> Online: —
+            <span className={styles.dot} aria-hidden /> — Viewers
           </span>
         </span>
       </Panel>
@@ -26,15 +27,6 @@ export function TopBar() {
           </span>
           <GuestCount />
         </Panel>
-        <button
-          className={styles.settings}
-          type="button"
-          aria-disabled="true"
-          title="Coming soon"
-          aria-label="Settings (coming soon)"
-        >
-          ⚙
-        </button>
       </div>
     </>
   );

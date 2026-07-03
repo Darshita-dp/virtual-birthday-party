@@ -19,7 +19,7 @@
 }
 
 .utility {
-  right: calc(var(--space-4) + env(safe-area-inset-right, 0px));
+  right: calc(var(--space-6) + env(safe-area-inset-right, 0px));
 }
 
 /* ── Center: chat pill (styled placeholder) ────────────────────── */
@@ -65,17 +65,37 @@
   border-radius: var(--radius-pill);
   font-size: 14px;
   line-height: 1;
+}
+
+/* Decorative emoji placeholder — tinted pinkish-purple (was yellow emoji). */
+.chatIcon {
+  background: transparent;
+  color: #d17fe0;
   cursor: default;
 }
 
-.chatIcon {
-  background: transparent;
-  color: var(--c-text-2);
+.chatIconSvg {
+  width: 16px;
+  height: 16px;
 }
 
 .chatSend {
   background: var(--grad-cta);
   color: var(--c-text-on-accent);
+  cursor: pointer;
+  transition:
+    filter 120ms ease-out,
+    transform 120ms ease-out;
+}
+
+.chatSend:hover:not(:disabled) {
+  filter: brightness(1.08);
+  transform: translateY(-1px);
+}
+
+.chatSend:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
 }
 
 .chatIcon:focus-visible,

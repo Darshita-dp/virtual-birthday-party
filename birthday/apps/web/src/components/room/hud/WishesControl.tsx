@@ -9,14 +9,20 @@ import styles from "./WishesControl.module.css";
 
 type Mode = "list" | "compose";
 
+interface WishesControlProps {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+}
+
 /**
  * Compact Wishes button + an openable/closable overlay panel showing real,
- * locally-persisted wishes (M6). Docks right on desktop, bottom sheet on
- * mobile. Local-only: reads the guest session for the author name, writes to
+ * locally-persisted wishes (M6). Open state is controlled by the parent
+ * (BottomDock, M13a) so the bottom quick-composer can force the panel open
+ * after a quick submit. Docks right on desktop, bottom sheet on mobile.
+ * Local-only: reads the guest session for the author name, writes to
  * `dvb.wishes.v1` via useWishes. No backend, no fake sample data.
  */
-export function WishesControl() {
-  const [open, setOpen] = useState(false);
+export function WishesControl({ open, onOpenChange }: WishesControlProps) {
   const [mode, setMode] = useState<Mode>("list");
   const [draft, setDraft] = useState("");
   const [name, setName] = useState<string | null>(null);
@@ -40,11 +46,11 @@ export function WishesControl() {
     const onKey = (e: globalThis.KeyboardEvent) => {
       if (e.key !== "Escape") return;
       if (mode === "compose") setMode("list");
-      else setOpen(false);
+      else onOpenChange(false);
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [open, mode]);
+  }, [open, mode, onOpenChange]);
 
   // Autofocus the textarea when the compose form opens.
   useEffect(() => {
@@ -94,22 +100,21 @@ export function WishesControl() {
         type="button"
         aria-expanded={open}
         aria-controls={panelId}
-        onClick={() => setOpen((v) => !v)}
+        onClick={() => onOpenChange(!open)}
       >
-        <span aria-hidden>💌</span>
         <span className={styles.triggerLabel}>Wishes</span>
       </button>
 
       {open && (
         <>
-          <div className={styles.backdrop} onClick={() => setOpen(false)} aria-hidden />
+          <div className={styles.backdrop} onClick={() => onOpenChange(false)} aria-hidden />
           <aside id={panelId} className={styles.panel} role="dialog" aria-label="Birthday Wishes">
             <header className={styles.header}>
               <h2 className={styles.title}>Birthday Wishes 💌</h2>
               <button
                 className={styles.close}
                 type="button"
-                onClick={() => setOpen(false)}
+                onClick={() => onOpenChange(false)}
                 aria-label="Close wishes"
               >
                 ✕

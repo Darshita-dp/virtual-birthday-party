@@ -1,40 +1,57 @@
+/* Matches the "+ Send a Wish" / "Post" pink gradient (M13a tweak) — smaller
+   and slightly transparent so it reads lighter while staying the dock's
+   primary action. */
 .cutCake {
   pointer-events: auto;
   flex: none;
-  height: 40px;
-  padding: 0 var(--space-4);
-  font-family: var(--font-ui);
-  font-size: 14px;
-  letter-spacing: 0.01em;
-  border: none;
-  border-radius: var(--radius-pill);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+
+  height: 34px;
+  padding: 0 var(--space-3);
+
+  border-radius: 12px;
+  border: 1.5px solid rgba(244, 201, 91, 0.55);
+
+  background: linear-gradient(180deg, rgba(255, 157, 200, 0.82) 0%, rgba(196, 155, 240, 0.82) 100%);
+
   color: var(--c-text-on-accent);
-  background: var(--grad-cta);
-  box-shadow: var(--glow-pink);
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 600;
+  font-style: italic;
+  letter-spacing: 0.04em;
+
+  box-shadow: 0 0 8px rgba(255, 120, 180, 0.35);
+
   cursor: pointer;
   white-space: nowrap;
   transition:
-    transform 120ms ease-out,
-    filter 120ms ease-out,
-    box-shadow 120ms ease-out;
+    transform 0.18s ease,
+    box-shadow 0.18s ease,
+    filter 0.18s ease;
 }
 
 .cutCake:hover:not(:disabled) {
   transform: translateY(-1px);
   filter: brightness(1.05);
+  box-shadow: 0 0 12px rgba(255, 120, 180, 0.5);
 }
 
 .cutCake:active:not(:disabled) {
-  transform: translateY(1px);
+  transform: translateY(1px) scale(0.98);
 }
 
 .cutCake:disabled {
   cursor: not-allowed;
-  opacity: 0.75;
-  filter: saturate(0.85);
+  opacity: 0.6;
+  filter: saturate(0.7);
+  box-shadow: 0 0 6px rgba(255, 120, 180, 0.25);
 }
 
 .cutCake:focus-visible {
-  outline: 2px solid var(--c-lavender-300);
-  outline-offset: 2px;
+  outline: 3px solid var(--c-lavender-300);
+  outline-offset: 3px;
 }
