@@ -18,6 +18,9 @@ export interface AvatarOption {
 
 type Palette = Pick<AvatarOption, "skin" | "hair" | "outfit" | "hat">;
 
+// Exactly 12 palettes → 12 avatars (avatar-01 … avatar-12). Files on disk match
+// 1:1 (verified in M10b polish). Do NOT add slots without corresponding PNGs at
+// /assets/avatars/<id>.png — mismatched entries render as fallback placeholders.
 const PALETTES: Palette[] = [
   { skin: "#f0c8a0", hair: "#3a2b40", outfit: "#8a66e0", hat: "#ffc2dd" },
   { skin: "#d8a878", hair: "#5a3da6", outfit: "#6fa3e0", hat: "#f9da86" },
@@ -31,9 +34,6 @@ const PALETTES: Palette[] = [
   { skin: "#e8b890", hair: "#e85a9b", outfit: "#b8d6f4", hat: "#ffc2dd" },
   { skin: "#f0c8a0", hair: "#2e1a55", outfit: "#c6b2f2", hat: "#f77ab0" },
   { skin: "#b87a50", hair: "#c8722e", outfit: "#8a66e0", hat: "#fdebb4" },
-  { skin: "#d8a878", hair: "#4a3a55", outfit: "#ff9dc8", hat: "#b8d6f4" },
-  { skin: "#f0c8a0", hair: "#5a3da6", outfit: "#93beec", hat: "#ffc2dd" },
-  { skin: "#c89060", hair: "#3a2b40", outfit: "#a98ce8", hat: "#f9da86" },
 ];
 
 export const AVATARS: AvatarOption[] = PALETTES.map((p, i) => {

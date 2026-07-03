@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useId, useRef, useState } from "react";
+import { getAvatar } from "@/data/avatars";
 import { AvatarPicker } from "./AvatarPicker";
 import styles from "./RsvpModal.module.css";
 
@@ -13,8 +14,12 @@ interface RsvpModalProps {
 }
 
 /**
- * RSVP flow (M4a): enter a name + choose an avatar, then enter the party.
- * Local UI only — the choice is persisted by the caller (localStorage).
+ * RSVP flow (M4a, redesigned in M10b polish): the ornate frame, title,
+ * subtitle, slot boxes, name input frame, and CTA bar are all baked into the
+ * decorative background at /landing/avatar-modal-bg.png. Real HTML controls
+ * (12 avatar buttons, name input, Enter Party CTA, close ✕, Back to Invite)
+ * are absolutely positioned over the drawn regions. Session/save contract,
+ * keyboard behavior, and prop shape are byte-for-byte the same.
  */
 export function RsvpModal({
   open,
@@ -46,56 +51,87 @@ export function RsvpModal({
   if (!open) return null;
 
   const trimmed = name.trim();
-  const canSubmit = trimmed.length > 0 && avatarId != null;
+  // Resolve the current avatarId against the live catalog so a stale id from an
+  // earlier session (e.g. avatar-13 from before the M10b polish trim) does not
+  // count as a valid selection.
+  const selectedAvatar = avatarId != null ? getAvatar(avatarId) : undefined;
+  const canSubmit = trimmed.length > 0 && selectedAvatar != null;
 
   const submit = () => {
-    if (!canSubmit || avatarId == null) return;
-    onSubmit(trimmed.slice(0, 24), avatarId);
+    if (!canSubmit || selectedAvatar == null) return;
+    onSubmit(trimmed.slice(0, 24), selectedAvatar.id);
   };
 
   return (
     <div className={styles.backdrop} onClick={onClose}>
       <div
-        className={styles.panel}
+        className={styles.frame}
         role="dialog"
         aria-modal="true"
         aria-labelledby={titleId}
         onClick={(e) => e.stopPropagation()}
       >
-        <header className={styles.header}>
-          <h2 id={titleId} className={styles.title}>
-            Join the party 🎉
-          </h2>
-          <button className={styles.close} type="button" onClick={onClose} aria-label="Close">
+        <h2 id={titleId} className={styles.srTitle}>
+          Choose Your Avatar
+        </h2>
+
+        {/* Ornate decorative frame — title, subtitle, slots, name-input frame,
+            and CTA bar are all drawn into this image. Real controls overlay it. */}
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src="/landing/avatar-modal-bg.png"
+          alt=""
+          className={styles.bg}
+          decoding="async"
+        />
+
+        <div className={styles.overlay}>
+          <button
+            className={styles.close}
+            type="button"
+            onClick={onClose}
+            aria-label="Close"
+          >
             ✕
           </button>
-        </header>
 
-        <label className={styles.field}>
-          <span className={styles.label}>Your name</span>
+          <div className={styles.gridWrap}>
+            <AvatarPicker value={avatarId} onChange={setAvatarId} />
+          </div>
+
           <input
             ref={nameRef}
             className={styles.input}
             type="text"
             value={name}
             maxLength={24}
-            placeholder="Enter your name"
+            placeholder="Here"
             onChange={(e) => setName(e.target.value)}
             onKeyDown={(e) => {
               if (e.key === "Enter" && canSubmit) submit();
             }}
+            aria-label="Your name"
           />
-        </label>
 
-        <div className={styles.pickerWrap}>
-          <span className={styles.label}>Choose your avatar</span>
-          <AvatarPicker value={avatarId} onChange={setAvatarId} />
+          <button
+            className={styles.enter}
+            type="button"
+            disabled={!canSubmit}
+            onClick={submit}
+          >
+            Enter Party
+          </button>
         </div>
-
-        <button className={styles.enter} type="button" disabled={!canSubmit} onClick={submit}>
-          Enter Party 🎉
-        </button>
       </div>
+
+      <button
+        className={styles.back}
+        type="button"
+        onClick={onClose}
+        aria-label="Back to invite"
+      >
+        ← Back to Invite
+      </button>
     </div>
   );
 }

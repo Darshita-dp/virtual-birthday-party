@@ -5,38 +5,15 @@
   pointer-events: none;
 }
 
-/* Small date / status line just above the buttons.
-   Tunable position: change `bottom` to move up/down inside the frame. */
-.dateRow {
-  position: absolute;
-  left: 50%;
-  bottom: 36%;
-  transform: translateX(-50%);
-  margin: 0;
-  padding: 4px 12px;
-  /* Readable sans (Nunito) so "15" reads as 15, not "1S" like it did in the
-     pixel face. Kept lavender + soft white glow to match the theme. */
-  font-family: var(--font-body);
-  font-weight: 600;
-  font-size: clamp(12px, 1.5vw, 15px);
-  letter-spacing: 0.04em;
-  color: var(--c-lavender-200);
-  text-shadow:
-    0 0 8px rgba(255, 255, 255, 0.35),
-    0 1px 2px rgba(10, 5, 24, 0.6);
-  white-space: nowrap;
-  pointer-events: none;
-}
-
 /* Button row.
    Tunable position: change `bottom` to move up/down inside the frame. */
 .actions {
   position: absolute;
   left: 50%;
-  bottom: 22%;
+  bottom: 20.5%;
   transform: translateX(-50%);
   display: flex;
-  gap: clamp(12px, 2vw, 24px);
+  gap: clamp(24px, 6vw, 34px);
   pointer-events: none; /* container is inert; buttons re-enable */
 }
 
@@ -50,9 +27,9 @@
   letter-spacing: 0.02em;
   padding: clamp(10px, 1.6vw, 14px) clamp(18px, 2.6vw, 30px);
   min-height: 44px;
-  min-width: 96px;
+  min-width: 60px;
   color: #ffffff;
-  border: 2px solid var(--c-gold-500);
+  border: 2px solid transparent;
   border-radius: 10px;
   text-shadow: 0 1px 0 rgba(10, 5, 24, 0.55);
   transition:
@@ -61,48 +38,44 @@
     filter 120ms ease-out;
 }
 
-/* ── Accept Invite — bright glowing pink ────────────────────────── */
+/* ── Accept Invite — transparent, pink glow + border ─────────────── */
 .accept {
-  background: linear-gradient(180deg, #ff8fc6 0%, #e85a9b 100%);
+  background: rgba(232, 90, 155, 0.14);
   box-shadow:
-    0 0 14px rgba(255, 120, 180, 0.65),
-    0 0 28px rgba(244, 201, 91, 0.4),
-    inset 0 -3px 0 rgba(0, 0, 0, 0.18),
-    inset 0 1px 0 rgba(255, 255, 255, 0.25);
+    0 0 14px rgba(255, 120, 180, 0.55),
+    0 0 26px rgba(244, 201, 91, 0.3),
+    inset 0 0 12px rgba(255, 120, 180, 0.15);
 }
 
 .accept:hover {
   transform: translateY(-1px);
-  filter: brightness(1.06);
+  background: rgba(232, 90, 155, 0.24);
   box-shadow:
-    0 0 20px rgba(255, 120, 180, 0.85),
-    0 0 36px rgba(244, 201, 91, 0.55),
-    inset 0 -3px 0 rgba(0, 0, 0, 0.18),
-    inset 0 1px 0 rgba(255, 255, 255, 0.25);
+    0 0 20px rgba(255, 120, 180, 0.8),
+    0 0 34px rgba(244, 201, 91, 0.45),
+    inset 0 0 14px rgba(255, 120, 180, 0.22);
 }
 
 .accept:active {
   transform: translateY(1px);
 }
 
-/* ── Accepted — purple ──────────────────────────────────────────── */
+/* ── Accepted — transparent, purple glow + border ────────────────── */
 .already {
-  background: linear-gradient(180deg, #8a66e0 0%, #5a3da6 100%);
+  background: rgba(90, 61, 166, 0.14);
   box-shadow:
-    0 0 14px rgba(138, 102, 224, 0.55),
-    0 0 24px rgba(244, 201, 91, 0.3),
-    inset 0 -3px 0 rgba(0, 0, 0, 0.22),
-    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    0 0 14px rgba(138, 102, 224, 0.45),
+    0 0 22px rgba(244, 201, 91, 0.22),
+    inset 0 0 12px rgba(138, 102, 224, 0.15);
 }
 
 .already:hover {
   transform: translateY(-1px);
-  filter: brightness(1.06);
+  background: rgba(90, 61, 166, 0.24);
   box-shadow:
-    0 0 20px rgba(138, 102, 224, 0.75),
-    0 0 32px rgba(244, 201, 91, 0.4),
-    inset 0 -3px 0 rgba(0, 0, 0, 0.22),
-    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    0 0 20px rgba(138, 102, 224, 0.7),
+    0 0 30px rgba(244, 201, 91, 0.32),
+    inset 0 0 14px rgba(138, 102, 224, 0.22);
 }
 
 .already:active {
@@ -120,9 +93,6 @@
 @media (max-width: 640px) {
   .actions {
     gap: 10px;
-  }
-  .dateRow {
-    font-size: 11px;
   }
 }
 
