@@ -10,8 +10,49 @@ export interface GuestSession {
 }
 
 const STORAGE_KEY = "dvb.guestSession.v1";
+const SESSION_ID_KEY = "dvb.sessionId.v1";
 
 let memory: GuestSession | null = null;
+let memSessionId: string | null = null;
+
+function generateId(): string {
+  try {
+    if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {
+      return crypto.randomUUID();
+    }
+  } catch {
+    /* fall through */
+  }
+  return `s_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 10)}`;
+}
+
+/**
+ * A stable, anonymous per-browser id, generated once and persisted separately
+ * from name/avatar. This is the upsert key for shared guests (M15): refreshing
+ * or re-RSVPing under the same id updates the same guest row instead of
+ * creating a duplicate.
+ */
+export function getSessionId(): string {
+  if (memSessionId) return memSessionId;
+  if (typeof window === "undefined") return generateId();
+  try {
+    const existing = window.localStorage.getItem(SESSION_ID_KEY);
+    if (existing) {
+      memSessionId = existing;
+      return existing;
+    }
+  } catch {
+    /* storage blocked */
+  }
+  const id = generateId();
+  memSessionId = id;
+  try {
+    window.localStorage.setItem(SESSION_ID_KEY, id);
+  } catch {
+    /* memory keeps it for this tab */
+  }
+  return id;
+}
 
 function isValid(v: unknown): v is GuestSession {
   return (

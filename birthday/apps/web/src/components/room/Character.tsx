@@ -126,7 +126,11 @@ export function Character(props: CharacterData) {
           <SoftGuest skin={skin} hair={hair} outfit={outfit} hat={hat} />
         )}
       </div>
-      {isHost && <span className={`${styles.nameTag} ${styles.hostTag}`}>👑 {name}</span>}
+      {isHost ? (
+        <span className={`${styles.nameTag} ${styles.hostTag}`}>👑 {name}</span>
+      ) : name ? (
+        <span className={`${styles.nameTag} ${styles.guestTag}`}>{name}</span>
+      ) : null}
     </div>
   );
 }

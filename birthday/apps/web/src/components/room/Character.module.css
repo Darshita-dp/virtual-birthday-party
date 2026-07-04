@@ -54,3 +54,13 @@
   color: var(--c-text-gold);
   box-shadow: var(--glow-gold);
 }
+
+/* Guest tags: smaller, quieter, no glow — so Darshita's gold host tag stays
+   visually special (M15). */
+.guestTag {
+  margin-top: 4px;
+  padding: 1px 6px;
+  font-size: 10px;
+  color: var(--c-lavender-200);
+  background: rgba(20, 9, 43, 0.55);
+}

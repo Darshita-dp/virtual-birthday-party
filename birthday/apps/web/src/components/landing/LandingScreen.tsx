@@ -2,7 +2,9 @@
 
 import { useCallback, useState } from "react";
 import { useRouter } from "next/navigation";
-import { readSession, saveSession } from "@/hooks/useGuestSession";
+import { getSessionId, readSession, saveSession } from "@/hooks/useGuestSession";
+import { joinParty } from "@/hooks/usePartyGuests";
+import { recordViewerClick } from "@/hooks/usePartyStats";
 import { ROUTES } from "@/lib/routes";
 import { InvitationCard } from "./InvitationCard";
 import { RsvpModal } from "./RsvpModal";
@@ -46,7 +48,15 @@ export function LandingScreen() {
     setRsvpOpen(true);
   }, []);
 
+  // Accept Invite: count a viewer click, then open the RSVP flow.
+  const handleAccept = useCallback(() => {
+    void recordViewerClick("accept");
+    openRsvp();
+  }, [openRsvp]);
+
+  // Accepted: count a viewer click, then enter (if session) or open RSVP.
   const handleAlreadyAccepted = useCallback(() => {
+    void recordViewerClick("accepted");
     if (readSession()) {
       enterParty();
       return;
@@ -57,6 +67,8 @@ export function LandingScreen() {
   const handleSubmit = useCallback(
     (name: string, avatarId: string) => {
       saveSession({ name, avatarId });
+      // Shared guest upsert (deduped by session_id); no-op without Supabase.
+      void joinParty({ sessionId: getSessionId(), name, avatarId });
       setRsvpOpen(false);
       enterParty();
     },
@@ -76,7 +88,7 @@ export function LandingScreen() {
           className={styles.bg}
           decoding="async"
         />
-        <InvitationCard onAccept={openRsvp} onAlreadyAccepted={handleAlreadyAccepted} />
+        <InvitationCard onAccept={handleAccept} onAlreadyAccepted={handleAlreadyAccepted} />
       </div>
 
       <RsvpModal

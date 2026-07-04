@@ -1,6 +1,7 @@
 import { EVENT } from "@dvb/config";
 import { Panel } from "../../ui/Panel";
 import { GuestCount } from "./GuestCount";
+import { ViewerCount } from "./ViewerCount";
 import styles from "./TopBar.module.css";
 
 /**
@@ -15,7 +16,7 @@ export function TopBar() {
         <span className={styles.titleText}>
           <span className={styles.title}>{EVENT.title}</span>
           <span className={styles.status}>
-            <span className={styles.dot} aria-hidden /> — Viewers
+            <span className={styles.dot} aria-hidden /> <ViewerCount /> Viewers
           </span>
         </span>
       </Panel>

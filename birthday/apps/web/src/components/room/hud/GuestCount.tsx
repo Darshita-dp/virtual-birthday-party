@@ -2,19 +2,25 @@
 
 import { useEffect, useState } from "react";
 import { readSession } from "@/hooks/useGuestSession";
+import { usePartyStats } from "@/hooks/usePartyStats";
+import { isSupabaseConfigured } from "@/lib/supabaseClient";
 import styles from "./GuestCount.module.css";
 
 /**
- * Local-session presence (0 or 1) for THIS browser only, labeled "Joined"
- * (M13a). A real cross-visitor total lands in M13b via Supabase — until then
- * this stays an honest local placeholder, never a fake global number.
+ * Joined count (M15). Shows the real cross-visitor total of joined guests from
+ * Supabase (`party_guests`). Without Supabase configured it falls back to the
+ * honest local placeholder (0 or 1 for THIS browser) — never a fake global
+ * number.
  */
 export function GuestCount() {
-  const [count, setCount] = useState(0);
+  const { joined } = usePartyStats();
+  const [localCount, setLocalCount] = useState(0);
 
   useEffect(() => {
-    if (readSession()) setCount(1);
+    if (!isSupabaseConfigured() && readSession()) setLocalCount(1);
   }, []);
+
+  const count = isSupabaseConfigured() ? (joined ?? 0) : localCount;
 
   return (
     <>
