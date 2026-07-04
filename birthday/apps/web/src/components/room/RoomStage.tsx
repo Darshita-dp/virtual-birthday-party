@@ -19,8 +19,23 @@ interface Size {
 interface View {
   min: number;
   maxScale: number;
-  def: number;
+  focus: number;
+  wide: number;
 }
+
+type ViewMode = "focus" | "wide";
+
+// Initial camera is zoomed in toward Darshita + cake ("focus"); the zoom-out
+// button drops to fill-width so more of the room fits ("wide").
+const FOCUS_FACTOR = 1.2;
+const WIDE_FACTOR = 1.02;
+
+// Focus target as fractions of the world: center on Darshita's column (~53%),
+// biased upward to include the cake/stage (~30%). Wide keeps the venue framing.
+const FOCUS_X = 0.51;
+const FOCUS_Y = 0.3;
+const WIDE_X = 0.5;
+const WIDE_Y = 0.4;
 
 function clamp(v: number, lo: number, hi: number): number {
   return Math.min(hi, Math.max(lo, v));
@@ -34,11 +49,10 @@ const useIsoLayoutEffect = typeof window !== "undefined" ? useLayoutEffect : use
  * The room as a pannable, zoomable world/map (camera behavior — not movement).
  *
  * The art renders at natural size and is scaled with a CSS transform; the full
- * image is always shown (never cropped, aspect preserved). The initial view is a
- * responsive "venue" framing — slightly zoomed past fit so the room fills the
- * screen — while zoom-out still bottoms out at the full-room fit. Ctrl/pinch
- * zoom and native scroll/pan are unchanged. The HUD lives outside this scaled
- * world, so it never zooms or scrolls.
+ * image is always shown (never cropped, aspect preserved). The initial view is
+ * FOCUSED on Darshita + the cake (center-upper); the zoom-out button widens to
+ * a fill-width "see the whole room" view. Native scroll/pan and Ctrl/pinch zoom
+ * are unchanged. The HUD lives outside this scaled world, so it never zooms.
  *
  * Asset: apps/web/public/assets/backgrounds/room-bg.png
  */
@@ -48,51 +62,84 @@ export function RoomStage({ children }: { children?: ReactNode }) {
 
   const [natural, setNatural] = useState<Size | null>(null);
   const [scale, setScale] = useState<number | null>(null);
+  const [viewMode, setViewMode] = useState<ViewMode>("focus");
 
   const naturalRef = useRef<Size | null>(null);
   const scaleRef = useRef(1);
   const minScaleRef = useRef(0.1);
   const maxScaleRef = useRef(3);
-  // Set by zoomTo to preserve a focal point; when null, the effect re-frames
-  // the view (centered horizontally, biased toward the cake/stage vertically).
+  const viewModeRef = useRef<ViewMode>("focus");
+  // Set by zoomTo to preserve a focal point; consumed by the commit effect.
   const pendingFocalRef = useRef<{ left: number; top: number } | null>(null);
+  // Set by applyView/resize to re-frame focus or wide after the scale commits.
+  const pendingFrameRef = useRef<ViewMode | null>(null);
 
   useEffect(() => {
     if (scale != null) scaleRef.current = scale;
   }, [scale]);
 
-  /** Responsive scale bounds + a "venue" default derived from the live viewport. */
+  useEffect(() => {
+    viewModeRef.current = viewMode;
+  }, [viewMode]);
+
+  /** Responsive scale bounds + focus/wide targets derived from the live viewport. */
   const computeView = useCallback((size: Size): View | null => {
     const vp = viewportRef.current;
     if (!vp || size.w === 0 || size.h === 0) return null;
-    const widthScale = vp.clientWidth / size.w;
-    // Minimum zoom fills the viewport width so no dark side gaps can appear.
-    // (widthScale === max(fitScale, fillWidthScale), since widthScale >= fitScale.)
+    const widthScale = vp.clientWidth / size.w; // fill-width min → no side gaps
     const min = widthScale;
-    const maxScale = min * 4; // zoom-in headroom relative to the fill-width min
-    // Start at ~fill-width (tiny bump avoids a 1px seam), within [min, maxScale].
-    const def = clamp(min * 1.02, min, maxScale);
-    return { min, maxScale, def };
+    const maxScale = min * 4;
+    const focus = clamp(min * FOCUS_FACTOR, min, maxScale);
+    const wide = clamp(min * WIDE_FACTOR, min, maxScale);
+    return { min, maxScale, focus, wide };
   }, []);
 
-  /** Center horizontally; bias vertically so the cake/stage + floor are framed. */
-  const frameScroll = useCallback(() => {
+  /** Center on Darshita + cake (center-upper). */
+  const frameFocus = useCallback(() => {
     const vp = viewportRef.current;
     if (!vp) return;
-    vp.scrollLeft = Math.max(0, (vp.scrollWidth - vp.clientWidth) * 0.5);
-    vp.scrollTop = Math.max(0, (vp.scrollHeight - vp.clientHeight) * 0.4);
+    const maxL = Math.max(0, vp.scrollWidth - vp.clientWidth);
+    const maxT = Math.max(0, vp.scrollHeight - vp.clientHeight);
+    vp.scrollLeft = clamp(FOCUS_X * vp.scrollWidth - vp.clientWidth / 2, 0, maxL);
+    vp.scrollTop = clamp(FOCUS_Y * vp.scrollHeight - vp.clientHeight / 2, 0, maxT);
   }, []);
 
-  const applyDefaultView = useCallback(
-    (size: Size) => {
+  /** Center horizontally; slight upward bias so the room reads as a venue. */
+  const frameWide = useCallback(() => {
+    const vp = viewportRef.current;
+    if (!vp) return;
+    vp.scrollLeft = Math.max(0, (vp.scrollWidth - vp.clientWidth) * WIDE_X);
+    vp.scrollTop = Math.max(0, (vp.scrollHeight - vp.clientHeight) * WIDE_Y);
+  }, []);
+
+  const applyFrame = useCallback(
+    (mode: ViewMode) => {
+      if (mode === "focus") frameFocus();
+      else frameWide();
+    },
+    [frameFocus, frameWide],
+  );
+
+  const applyView = useCallback(
+    (mode: ViewMode) => {
+      const size = naturalRef.current;
+      if (!size) return;
       const v = computeView(size);
       if (!v) return;
-      minScaleRef.current = v.min; // zoom-out floor = fill-width (no side gaps)
+      minScaleRef.current = v.min;
       maxScaleRef.current = v.maxScale;
-      pendingFocalRef.current = null; // re-frame after the scale commits
-      setScale(v.def);
+      viewModeRef.current = mode;
+      setViewMode(mode);
+      pendingFocalRef.current = null;
+      pendingFrameRef.current = mode;
+      const target = mode === "focus" ? v.focus : v.wide;
+      if (target !== scaleRef.current) {
+        setScale(target);
+      } else {
+        applyFrame(mode); // scale unchanged → frame directly
+      }
     },
-    [computeView],
+    [computeView, applyFrame],
   );
 
   const handleLoad = useCallback(() => {
@@ -101,24 +148,28 @@ export function RoomStage({ children }: { children?: ReactNode }) {
     const size: Size = { w: img.naturalWidth, h: img.naturalHeight };
     naturalRef.current = size;
     setNatural(size);
-    applyDefaultView(size);
-  }, [applyDefaultView]);
+    applyView("focus"); // land on the focused Darshita + cake view
+  }, [applyView]);
 
   // After a scale change (and the .world size) commits, apply the focal scroll
-  // if a zoom set one, otherwise re-frame the view.
+  // if a zoom set one, otherwise re-frame focus/wide.
   useIsoLayoutEffect(() => {
     if (scale == null) return;
     const vp = viewportRef.current;
     if (!vp) return;
-    const focal = pendingFocalRef.current;
-    if (focal) {
-      vp.scrollLeft = focal.left;
-      vp.scrollTop = focal.top;
+    if (pendingFocalRef.current) {
+      vp.scrollLeft = pendingFocalRef.current.left;
+      vp.scrollTop = pendingFocalRef.current.top;
       pendingFocalRef.current = null;
-    } else {
-      frameScroll();
+      return;
     }
-  }, [scale, frameScroll]);
+    if (pendingFrameRef.current) {
+      applyFrame(pendingFrameRef.current);
+      pendingFrameRef.current = null;
+      return;
+    }
+    frameWide();
+  }, [scale, applyFrame, frameWide]);
 
   // Zoom toward a focal point (client coords); defaults to viewport center.
   const zoomTo = useCallback(
@@ -152,8 +203,7 @@ export function RoomStage({ children }: { children?: ReactNode }) {
     return () => vp.removeEventListener("wheel", onWheel);
   }, [zoomTo]);
 
-  // Recompute the responsive bounds on resize; keep the current zoom within them
-  // and re-frame the view for the new viewport size.
+  // Recompute the responsive bounds on resize; keep the current view mode.
   useEffect(() => {
     const onResize = () => {
       const size = naturalRef.current;
@@ -162,22 +212,26 @@ export function RoomStage({ children }: { children?: ReactNode }) {
       if (!v) return;
       minScaleRef.current = v.min;
       maxScaleRef.current = v.maxScale;
-      const next = clamp(scaleRef.current, v.min, v.maxScale);
+      const mode = viewModeRef.current;
+      const target = mode === "focus" ? v.focus : v.wide;
       pendingFocalRef.current = null;
-      if (next !== scaleRef.current) {
-        setScale(next); // effect re-frames after commit
+      pendingFrameRef.current = mode;
+      if (target !== scaleRef.current) {
+        setScale(target);
       } else {
-        frameScroll(); // scale unchanged: re-frame directly for the new size
+        applyFrame(mode);
       }
     };
     window.addEventListener("resize", onResize);
     return () => window.removeEventListener("resize", onResize);
-  }, [computeView, frameScroll]);
+  }, [computeView, applyFrame]);
+
+  const toggleView = useCallback(() => {
+    applyView(viewModeRef.current === "focus" ? "wide" : "focus");
+  }, [applyView]);
 
   const worldStyle: CSSProperties | undefined =
     natural && scale != null ? { width: natural.w * scale, height: natural.h * scale } : undefined;
-  // The scaled layer that holds the room image AND the in-world characters, so
-  // they share the same transform (scale/pan together).
   const innerStyle: CSSProperties | undefined =
     natural && scale != null
       ? { width: natural.w, height: natural.h, transform: `scale(${scale})`, opacity: 1 }
@@ -185,22 +239,56 @@ export function RoomStage({ children }: { children?: ReactNode }) {
   const ready = natural != null && scale != null;
 
   return (
-    <div className={styles.viewport} ref={viewportRef}>
-      <div className={styles.world} style={worldStyle}>
-        <div className={styles.worldInner} style={innerStyle}>
-          {/* Large single world map: full image, never cropped. next/image
-              resizing/optimization is intentionally not wanted here. */}
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            ref={imgRef}
-            className={styles.worldImg}
-            src="/assets/backgrounds/room-bg.png"
-            alt=""
-            onLoad={handleLoad}
-          />
-          {ready && children}
+    <>
+      <div className={styles.viewport} ref={viewportRef}>
+        <div className={styles.world} style={worldStyle}>
+          <div className={styles.worldInner} style={innerStyle}>
+            {/* Large single world map: full image, never cropped. next/image
+                resizing/optimization is intentionally not wanted here. */}
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              ref={imgRef}
+              className={styles.worldImg}
+              src="/assets/backgrounds/room-bg.png"
+              alt=""
+              onLoad={handleLoad}
+            />
+            {ready && children}
+          </div>
         </div>
       </div>
-    </div>
+
+      {ready && (
+        <button
+          className={styles.zoomBtn}
+          type="button"
+          onClick={toggleView}
+          aria-label={
+            viewMode === "focus"
+              ? "Zoom out to see the whole room"
+              : "Zoom in to Darshita and the cake"
+          }
+          title={viewMode === "focus" ? "Zoom out" : "Zoom in"}
+        >
+          <svg
+            viewBox="0 0 24 24"
+            width="18"
+            height="18"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            aria-hidden
+            focusable="false"
+          >
+            <path d="M8 3 H4 V7" />
+            <path d="M16 3 H20 V7" />
+            <path d="M8 21 H4 V17" />
+            <path d="M16 21 H20 V17" />
+          </svg>
+        </button>
+      )}
+    </>
   );
 }
