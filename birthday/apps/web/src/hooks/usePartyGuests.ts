@@ -66,7 +66,7 @@ export function computePlacement(sessionId: string): GuestPlacement {
   return {
     xPct: clamp(zone.xPct + jitterX, 8, 92),
     yPct: clamp(zone.yPct + jitterY, 36, 82),
-    heightPct: zone.heightPct,
+    heightPct: zone.heightPct + 3,
   };
 }
 
