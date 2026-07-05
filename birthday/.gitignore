@@ -33,3 +33,5 @@ coverage/
 
 # excluded from git — kept locally for reference only (pre-cleanup avatar backups)
 apps/web/public/assets/avatars_original_white_bg/
+
+design-assets/
