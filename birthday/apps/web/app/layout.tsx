@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import type { ReactNode } from "react";
+import { RotateGate } from "@/components/room/RotateGate";
 import { fontDisplay, fontNunito, fontPixel } from "@/fonts/fonts";
 import { MusicProvider } from "@/providers/MusicProvider";
 import { SfxProvider } from "@/providers/SfxProvider";
@@ -57,6 +58,9 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
         <MusicProvider>
           <SfxProvider>{children}</SfxProvider>
         </MusicProvider>
+        {/* Portrait "rotate your phone" gate — global so it covers the landing
+            invitation as well as /party. CSS-only visibility (portrait phones). */}
+        <RotateGate />
       </body>
     </html>
   );

@@ -1,6 +1,5 @@
 import { RoomStage } from "./RoomStage";
 import { RoomCharacters } from "./RoomCharacters";
-import { RotateGate } from "./RotateGate";
 import { TopBar } from "./hud/TopBar";
 import { BottomDock } from "./hud/BottomDock";
 import styles from "./RoomScreen.module.css";
@@ -10,10 +9,9 @@ import styles from "./RoomScreen.module.css";
  * characters (host + sample guests), plus a fixed compact HUD overlay. Only the
  * Wishes panel toggles; no movement, multiplayer, or backend.
  *
- * M17: fills the full viewport as a horizontal "game" scene. The RotateGate
- * covers everything on portrait phones, asking the player to rotate to
- * landscape. The room stays mounted behind it so RoomStage re-frames on the
- * orientation-change resize instead of re-subscribing to realtime.
+ * M17: fills the full viewport as a horizontal "game" scene. The portrait
+ * "rotate your phone" gate lives globally in app/layout.tsx (covering the
+ * landing invitation too), so it isn't mounted here.
  */
 export function RoomScreen() {
   return (
@@ -25,7 +23,6 @@ export function RoomScreen() {
         <TopBar />
         <BottomDock />
       </div>
-      <RotateGate />
     </main>
   );
 }
