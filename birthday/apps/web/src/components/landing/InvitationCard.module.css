@@ -96,6 +96,13 @@
   }
 }
 
+@media (orientation: landscape) and (max-height: 500px) {
+  .actions {
+    left: 52%;
+    bottom: 18.5%;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .accept,
   .already {
