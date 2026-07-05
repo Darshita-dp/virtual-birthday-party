@@ -1,30 +1,32 @@
-/* Full-viewport stage. Any letterbox bands around the frame fill with the
-   image's own night-sky purple so they read as part of the scene. */
+/* Full-viewport stage. The frame covers the whole viewport (no gutters); any
+   overflow is cropped here. Background stays night-sky purple as a safe fill. */
 .stage {
   position: relative;
-  min-height: 100dvh;
-  width: 100%;
+  width: 100vw;
+  height: 100vh; /* fallback for engines without dvh */
+  height: 100dvh;
   overflow: hidden;
   display: grid;
   place-items: center;
   background: var(--c-night-900);
 }
 
-/* Frame that preserves the illustration's 1672:941 (~16:9) aspect ratio and
-   fits inside the viewport without cropping. Buttons and text overlay are
-   positioned relative to this box, so they always align with the artwork. */
+/* Frame preserves the illustration's 1672:941 (~16:9) aspect ratio but is sized
+   to COVER the viewport (larger dimension wins), so it fills the screen with no
+   side/top gutters and the overflow is cropped. Because the frame still matches
+   the image aspect, the overlaid buttons/text stay aligned with the artwork. */
 .frame {
   position: relative;
-  aspect-ratio: 1672 / 941;
-  width: min(100vw, calc(100dvh * 1672 / 941));
-  height: auto;
+  width: max(100vw, calc(100dvh * 1672 / 941));
+  height: max(100dvh, calc(100vw * 941 / 1672));
 }
 
 .bg {
   display: block;
   width: 100%;
   height: 100%;
-  object-fit: contain;
+  object-fit: cover;
+  object-position: center;
   image-rendering: pixelated;
   user-select: none;
   -webkit-user-drag: none;

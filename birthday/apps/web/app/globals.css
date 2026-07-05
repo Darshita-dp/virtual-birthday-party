@@ -10,6 +10,9 @@ html,
 body {
   margin: 0;
   padding: 0;
+  /* Never let a white page background peek through (e.g. landscape crop edges). */
+  background: var(--c-night-900);
+  overflow-x: hidden;
 }
 
 body {
