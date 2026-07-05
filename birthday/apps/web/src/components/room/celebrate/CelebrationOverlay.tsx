@@ -22,15 +22,16 @@ const COLORS = [
   "var(--c-blue-400)",
 ];
 
-// Light aesthetic palette: pink · blue · green · yellow · purple. Hex so the
+// Soft pastel palette: pink · blue · green · yellow · purple. Hex so the
 // SVG `fill` attribute resolves directly (CSS variables inside SVG attributes
-// via currentColor is fragile inside a portal).
+// via currentColor is fragile inside a portal). Slightly muted vs. before so
+// the balloons read as translucent pastel, not solid/saturated.
 const BALLOON_COLORS = [
-  "#ffc2dd", // pink
-  "#b8d6f4", // blue
-  "#c2f0d0", // mint green
-  "#fdebb4", // soft yellow
-  "#c6b2f2", // purple
+  "#ffd0e4", // pastel pink
+  "#c7e0f7", // pastel blue
+  "#cdf0d9", // pastel mint
+  "#fdf0c4", // pastel yellow
+  "#d8c7f3", // pastel lavender
 ];
 
 interface Particle {
@@ -60,6 +61,7 @@ interface Balloon {
   sway: number; // vw
   tilt: number; // deg
   color: string;
+  sparkles: { x: number; y: number; size: number; delay: number }[];
 }
 
 /** X biased toward the edges so the mid-frame (Darshita + self-guest) stays clear. */
@@ -103,6 +105,21 @@ function makeSparkles(count: number): Sparkle[] {
   return list;
 }
 
+/** 2-3 tiny sparkles trailing near a balloon's string, so the rise feels magical. */
+function makeBalloonSparkles(): Balloon["sparkles"] {
+  const n = 2 + Math.floor(Math.random() * 2); // 2–3
+  const list: Balloon["sparkles"] = [];
+  for (let i = 0; i < n; i++) {
+    list.push({
+      x: 30 + Math.random() * 40, // % across the balloon's own box
+      y: 40 + Math.random() * 55,
+      size: 6 + Math.random() * 6,
+      delay: Math.random() * 2,
+    });
+  }
+  return list;
+}
+
 /** Organic, non-linear distribution across the room area. */
 function makeBalloons(count: number): Balloon[] {
   const list: Balloon[] = [];
@@ -117,6 +134,7 @@ function makeBalloons(count: number): Balloon[] {
       sway: (Math.random() - 0.5) * 10, // ±5vw
       tilt: (Math.random() - 0.5) * 14, // ±7deg gentle sway rotation
       color: palette[i % palette.length]!,
+      sparkles: makeBalloonSparkles(),
     });
   }
   return list;
@@ -194,13 +212,35 @@ export function CelebrationOverlay() {
             aria-hidden
             focusable="false"
           >
-            <line x1="15" y1="30" x2="15" y2="44" stroke={b.color} strokeWidth="0.6" opacity="0.5" />
-            <path d="M13 28 L17 28 L15 32 Z" fill={b.color} opacity="0.95" />
-            <ellipse cx="15" cy="15" rx="11" ry="14" fill={b.color} opacity="0.95" />
-            <ellipse cx="11" cy="10" rx="3" ry="5" fill="#ffffff" opacity="0.55" />
-            <circle cx="10" cy="8" r="1.1" fill="#ffffff" opacity="0.95" />
-            <circle cx="19" cy="18" r="0.9" fill="#ffffff" opacity="0.75" />
+            <line x1="15" y1="30" x2="15" y2="44" stroke={b.color} strokeWidth="0.6" opacity="0.4" />
+            <path d="M13 28 L17 28 L15 32 Z" fill={b.color} opacity="0.7" />
+            <ellipse cx="15" cy="15" rx="11" ry="14" fill={b.color} opacity="0.7" />
+            <ellipse cx="11" cy="10" rx="3" ry="5" fill="#ffffff" opacity="0.45" />
+            <circle cx="10" cy="8" r="1.1" fill="#ffffff" opacity="0.8" />
+            <circle cx="19" cy="18" r="0.9" fill="#ffffff" opacity="0.6" />
           </svg>
+
+          {/* Tiny sparkles trailing near the string — nested so they rise with
+              the balloon's own transform instead of animating separately. */}
+          {b.sparkles.map((s, si) => (
+            <svg
+              key={si}
+              className={styles.balloonSparkle}
+              viewBox="0 0 24 24"
+              style={{
+                left: `${s.x}%`,
+                top: `${s.y}%`,
+                width: `${s.size}px`,
+                height: `${s.size}px`,
+                animationDelay: `${s.delay}s`,
+              }}
+            >
+              <path
+                d="M12 2 L13.5 10.5 L22 12 L13.5 13.5 L12 22 L10.5 13.5 L2 12 L10.5 10.5 Z"
+                fill="#fff6c8"
+              />
+            </svg>
+          ))}
         </span>
       ))}
 

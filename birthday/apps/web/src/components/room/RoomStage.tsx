@@ -41,6 +41,16 @@ function clamp(v: number, lo: number, hi: number): number {
   return Math.min(hi, Math.max(lo, v));
 }
 
+// Phone "game mode" — matches the M17 HUD breakpoints. In this mode the room
+// uses a COVER min-scale (fills 100vw × 100dvh, no gutters) and starts in the
+// wide view so the whole room reads at first glance.
+function isMobileLandscape(): boolean {
+  return (
+    typeof window !== "undefined" &&
+    window.matchMedia("(orientation: landscape) and (max-height: 500px)").matches
+  );
+}
+
 // Avoids the SSR "useLayoutEffect does nothing on the server" warning while
 // still committing scroll before paint on the client.
 const useIsoLayoutEffect = typeof window !== "undefined" ? useLayoutEffect : useEffect;
@@ -86,8 +96,12 @@ export function RoomStage({ children }: { children?: ReactNode }) {
   const computeView = useCallback((size: Size): View | null => {
     const vp = viewportRef.current;
     if (!vp || size.w === 0 || size.h === 0) return null;
-    const widthScale = vp.clientWidth / size.w; // fill-width min → no side gaps
-    const min = widthScale;
+    const widthScale = vp.clientWidth / size.w;
+    const heightScale = vp.clientHeight / size.h;
+    // Desktop/tablet: fill width (unchanged). Phone landscape "game mode": COVER —
+    // take the larger of width/height scale so the room fills the viewport in
+    // both axes with no purple gutters (the excess is scrollable/pannable).
+    const min = isMobileLandscape() ? Math.max(widthScale, heightScale) : widthScale;
     const maxScale = min * 4;
     const focus = clamp(min * FOCUS_FACTOR, min, maxScale);
     const wide = clamp(min * WIDE_FACTOR, min, maxScale);
@@ -148,7 +162,9 @@ export function RoomStage({ children }: { children?: ReactNode }) {
     const size: Size = { w: img.naturalWidth, h: img.naturalHeight };
     naturalRef.current = size;
     setNatural(size);
-    applyView("focus"); // land on the focused Darshita + cake view
+    // Phone landscape starts wide (the whole room reads at once); desktop/tablet
+    // keeps the Darshita + cake focused first look.
+    applyView(isMobileLandscape() ? "wide" : "focus");
   }, [applyView]);
 
   // After a scale change (and the .world size) commits, apply the focal scroll

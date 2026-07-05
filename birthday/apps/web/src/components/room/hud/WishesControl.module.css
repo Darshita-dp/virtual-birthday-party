@@ -12,9 +12,13 @@
   padding: 0 var(--space-3);
 
   border-radius: 12px;
-  border: 1.5px solid rgba(244, 201, 91, 0.55);
+  /* Glass-CTA — softer border + lighter gradient so it reads as transparent
+     like the music card, while keeping the pink birthday signature. */
+  border: 1px solid rgba(255, 255, 255, 0.16);
 
-  background: linear-gradient(180deg, rgba(255, 157, 200, 0.82) 0%, rgba(196, 155, 240, 0.82) 100%);
+  background: linear-gradient(180deg, rgba(255, 157, 200, 0.5) 0%, rgba(196, 155, 240, 0.5) 100%);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
 
   color: var(--c-text-on-accent);
   font-family: var(--font-body);
@@ -23,7 +27,7 @@
   font-style: italic;
   letter-spacing: 0.04em;
 
-  box-shadow: 0 0 8px rgba(255, 120, 180, 0.35);
+  box-shadow: 0 2px 10px rgba(255, 120, 180, 0.22);
 
   cursor: pointer;
   transition:
@@ -34,8 +38,8 @@
 
 .trigger:hover {
   transform: translateY(-1px);
-  filter: brightness(1.05);
-  box-shadow: 0 0 12px rgba(255, 120, 180, 0.5);
+  filter: brightness(1.08);
+  box-shadow: 0 2px 14px rgba(255, 120, 180, 0.38);
 }
 
 .trigger:active {

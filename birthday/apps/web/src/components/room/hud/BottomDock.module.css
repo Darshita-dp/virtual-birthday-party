@@ -31,6 +31,12 @@
   height: 40px;
   width: min(320px, 36vw);
   border-radius: var(--radius-pill);
+  /* Glass — matches the music card + top-bar tiles. */
+  background: rgba(27, 15, 56, 0.42);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.22);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
 }
 
 .input {

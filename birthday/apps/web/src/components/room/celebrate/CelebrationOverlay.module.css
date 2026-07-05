@@ -122,11 +122,35 @@
   bottom: 0;
   opacity: 0;
   will-change: transform, opacity;
-  filter: drop-shadow(0 6px 10px rgba(10, 5, 24, 0.35))
-    drop-shadow(0 0 6px rgba(255, 246, 200, 0.35));
+  filter: drop-shadow(0 4px 8px rgba(10, 5, 24, 0.22))
+    drop-shadow(0 0 5px rgba(255, 246, 200, 0.3));
   animation-name: rise;
   animation-timing-function: ease-out;
   animation-fill-mode: both;
+}
+
+/* Tiny sparkles trailing near each balloon's string — nested inside .balloon
+   so they inherit its rise/sway transform and drift up together. */
+.balloonSparkle {
+  position: absolute;
+  opacity: 0;
+  filter: drop-shadow(0 0 4px rgba(255, 246, 200, 0.8));
+  animation-name: balloonTwinkle;
+  animation-timing-function: ease-in-out;
+  animation-duration: 1.4s;
+  animation-iteration-count: infinite;
+}
+
+@keyframes balloonTwinkle {
+  0%,
+  100% {
+    opacity: 0;
+    transform: scale(0.6);
+  }
+  50% {
+    opacity: 0.9;
+    transform: scale(1.05);
+  }
 }
 
 @keyframes rise {

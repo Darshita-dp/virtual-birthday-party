@@ -22,9 +22,14 @@
 .already {
   pointer-events: auto;
   cursor: pointer;
-  font-family: var(--font-ui);
-  font-size: clamp(12px, 1.4vw, 15px);
-  letter-spacing: 0.02em;
+  /* Pretty birthday-display font (Press Start 2P) instead of the plain UI font
+     — reads as festive/pixel signage over the painted invitation. Sized down
+     from the UI font because pixel type renders visually larger. */
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(6.5px, 0.82vw, 8.2px);
+  letter-spacing: 0.03em;
+  text-transform: none;
   padding: clamp(10px, 1.6vw, 14px) clamp(18px, 2.6vw, 30px);
   min-height: 44px;
   min-width: 60px;

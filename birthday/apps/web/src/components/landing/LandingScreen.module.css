@@ -1,35 +1,60 @@
-/* Full-viewport stage. The frame covers the whole viewport (no gutters); any
-   overflow is cropped here. Background stays night-sky purple as a safe fill. */
+/* Full landing stage.
+   Default desktop/tablet behavior: show the full invitation artwork without cropping.
+   Phone landscape override below uses cover mode to remove side gutters. */
 .stage {
   position: relative;
-  width: 100vw;
-  height: 100vh; /* fallback for engines without dvh */
-  height: 100dvh;
+  width: 100%;
+  min-height: 100vh; /* fallback for engines without dvh */
+  min-height: 100dvh;
   overflow: hidden;
   display: grid;
   place-items: center;
   background: var(--c-night-900);
 }
 
-/* Frame preserves the illustration's 1672:941 (~16:9) aspect ratio but is sized
-   to COVER the viewport (larger dimension wins), so it fills the screen with no
-   side/top gutters and the overflow is cropped. Because the frame still matches
-   the image aspect, the overlaid buttons/text stay aligned with the artwork. */
+/* Desktop/tablet default:
+   Preserve the illustration's 1672:941 aspect ratio and fit it inside the viewport.
+   This prevents the bottom of the landing image from being cropped on desktop. */
 .frame {
   position: relative;
-  width: max(100vw, calc(100dvh * 1672 / 941));
-  height: max(100dvh, calc(100vw * 941 / 1672));
+  aspect-ratio: 1672 / 941;
+  width: min(100vw, calc(100dvh * 1672 / 941));
+  max-width: 100vw;
 }
 
 .bg {
   display: block;
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
   object-position: center;
   image-rendering: pixelated;
   user-select: none;
   -webkit-user-drag: none;
+}
+
+/* Phone landscape only:
+   Cover the viewport so there are no side gutters on mobile landscape.
+   This keeps the desktop landing image from being zoomed/cropped. */
+@media (orientation: landscape) and (max-height: 500px) {
+  .stage {
+    width: 100vw;
+    height: 100vh; /* fallback */
+    height: 100dvh;
+    min-height: 0;
+  }
+
+  .frame {
+    aspect-ratio: auto;
+    width: max(100vw, calc(100dvh * 1672 / 941));
+    height: max(100dvh, calc(100vw * 941 / 1672));
+    max-width: none;
+  }
+
+  .bg {
+    object-fit: cover;
+    object-position: center;
+  }
 }
 
 /* Fade overlay for the Accept / Already Accepted route transition. */
