@@ -167,3 +167,12 @@
     transition: none;
   }
 }
+
+/* Mobile landscape (game mode): slim the card so it clears the center dock on a
+   short, narrow screen while keeping the full transport + progress usable. */
+@media (orientation: landscape) and (max-height: 500px) {
+  .card {
+    width: 148px;
+    padding: var(--space-1) var(--space-2);
+  }
+}

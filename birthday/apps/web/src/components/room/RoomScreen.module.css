@@ -1,7 +1,11 @@
 .screen {
   position: relative;
-  min-height: 100dvh;
   width: 100%;
+  /* Lock to the full viewport so the room reads as a game scene, not a tall
+     scrolling page. Fallback → dvh (mobile browser chrome bars). Older engines
+     ignore dvh and keep vh. */
+  height: 100vh;
+  height: 100dvh;
   overflow: hidden;
 }
 

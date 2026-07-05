@@ -121,3 +121,28 @@
     display: none;
   }
 }
+
+/* Mobile landscape (game mode): the dock hugs the bottom edge and the chat pill
+   shrinks so Wishes + Celebrate + Music all fit one short row without covering
+   the scene. Music (utility) stays visible here (wider than 640px). */
+@media (orientation: landscape) and (max-height: 500px) {
+  .center,
+  .utility {
+    bottom: calc(var(--space-3) + env(safe-area-inset-bottom, 0px));
+  }
+
+  .center {
+    gap: var(--space-2);
+    padding: 0 var(--space-3);
+  }
+
+  .utility {
+    right: calc(var(--space-3) + env(safe-area-inset-right, 0px));
+  }
+
+  .chat {
+    display: flex;
+    height: 34px;
+    width: min(200px, 24vw);
+  }
+}

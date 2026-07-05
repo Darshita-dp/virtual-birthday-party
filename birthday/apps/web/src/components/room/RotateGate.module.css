@@ -1,0 +1,83 @@
+/* Hidden by default (desktop + tablet + landscape phones). Only revealed on
+   small screens held in portrait — see the media query at the bottom. */
+.gate {
+  display: none;
+}
+
+/* Full-screen purple/glass overlay above the entire HUD (HUD z-index is 10,
+   Wishes panel is 30) so nothing shows through the portrait gate. */
+.gate {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  align-items: center;
+  justify-content: center;
+  padding: calc(var(--space-6) + env(safe-area-inset-top, 0px))
+    calc(var(--space-6) + env(safe-area-inset-right, 0px))
+    calc(var(--space-6) + env(safe-area-inset-bottom, 0px))
+    calc(var(--space-6) + env(safe-area-inset-left, 0px));
+  text-align: center;
+  background: var(--grad-sky);
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
+  max-width: 320px;
+  padding: var(--space-6) var(--space-5);
+  border: 1px solid var(--c-border);
+  border-radius: var(--radius-lg);
+  background: var(--c-panel);
+  box-shadow: var(--shadow-modal);
+  backdrop-filter: blur(8px);
+}
+
+.icon {
+  font-size: 44px;
+  line-height: 1;
+  /* Nudge the phone toward landscape to hint the gesture. */
+  animation: rotateHint 2.4s ease-in-out infinite;
+}
+
+.title {
+  margin: 0;
+  font-family: var(--font-ui);
+  font-size: 20px;
+  color: var(--c-text);
+}
+
+.subtitle {
+  margin: 0;
+  font-family: var(--font-body);
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--c-text-2);
+}
+
+@keyframes rotateHint {
+  0%,
+  55%,
+  100% {
+    transform: rotate(0deg);
+  }
+  75%,
+  90% {
+    transform: rotate(-90deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .icon {
+    animation: none;
+  }
+}
+
+/* Show the gate only on small screens in portrait orientation. Landscape phones,
+   tablets, and desktop never see it. 900px keeps large tablets out. */
+@media (max-width: 900px) and (orientation: portrait) {
+  .gate {
+    display: flex;
+  }
+}

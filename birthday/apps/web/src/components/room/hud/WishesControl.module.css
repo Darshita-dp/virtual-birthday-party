@@ -352,6 +352,21 @@
   }
 }
 
+/* Mobile landscape (game mode): a short screen can't fit a bottom sheet or a
+   tall right panel, so dock a compact card to the right that leaves the center
+   scene (Darshita/cake/guests) visible. Sits above the bottom dock. */
+@media (orientation: landscape) and (max-height: 500px) {
+  .panel {
+    top: calc(var(--space-3) + env(safe-area-inset-top, 0px));
+    right: calc(var(--space-3) + env(safe-area-inset-right, 0px));
+    left: auto;
+    bottom: calc(var(--space-6) + 40px + env(safe-area-inset-bottom, 0px));
+    width: min(260px, 44vw);
+    max-height: none;
+    padding: var(--space-3);
+  }
+}
+
 /* Mobile: bottom sheet with a dimmed backdrop. */
 @media (max-width: 640px) {
   .backdrop {
