@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, type KeyboardEvent } from "react";
 import styles from "./Character.module.css";
 
 export interface CharacterData {
@@ -100,20 +100,44 @@ function SoftGuest({
   );
 }
 
+interface CharacterProps extends CharacterData {
+  /** When provided, the character becomes clickable/keyboard-focusable
+   *  (e.g. Darshita opens the "About this party" modal). Guests never get
+   *  this, so their markers stay pointer-events:none as before. */
+  onClick?: () => void;
+  ariaLabel?: string;
+}
+
 /**
  * A character placed inside the room world layer (scales/pans with the room).
  * Host uses her sprite image (with PixelGuest as her unchanged fallback); sample
- * guests use SoftGuest. Only the host shows a name tag. Non-interactive.
+ * guests use SoftGuest. Only the host shows a name tag. Non-interactive unless
+ * `onClick` is passed.
  */
-export function Character(props: CharacterData) {
-  const { name, isHost, xPct, yPct, heightPct, src, skin, hair, outfit, hat } = props;
+export function Character(props: CharacterProps) {
+  const { name, isHost, xPct, yPct, heightPct, src, skin, hair, outfit, hat, onClick, ariaLabel } =
+    props;
   const [imgError, setImgError] = useState(false);
   const showImage = Boolean(src) && !imgError;
+  const interactive = Boolean(onClick);
+
+  const handleKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
+    if (!onClick) return;
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      onClick();
+    }
+  };
 
   return (
     <div
-      className={styles.marker}
+      className={`${styles.marker} ${interactive ? styles.interactive : ""}`.trim()}
       style={{ left: `${xPct}%`, top: `${yPct}%`, height: `${heightPct}%`, zIndex: Math.round(yPct) }}
+      role={interactive ? "button" : undefined}
+      tabIndex={interactive ? 0 : undefined}
+      onClick={onClick}
+      onKeyDown={interactive ? handleKeyDown : undefined}
+      aria-label={interactive ? ariaLabel : undefined}
     >
       <span className={styles.shadow} aria-hidden />
       <div className={styles.sprite}>

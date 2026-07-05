@@ -39,42 +39,37 @@ export interface GuestPlacement {
 // there are enough slots for the guests currently in the room. Height grows
 // slightly for lower rows for a simple depth/perspective feel.
 const GUEST_SLOTS: GuestPlacement[] = [
-  // Row A — just below the host, avoiding her column.
-  { xPct: 15, yPct: 38, heightPct: 6.5 },
-  { xPct: 32, yPct: 38, heightPct: 6.5 },
-  { xPct: 68, yPct: 38, heightPct: 6.5 },
-  { xPct: 85, yPct: 38, heightPct: 6.5 },
-  // Row B
-  { xPct: 8, yPct: 46, heightPct: 7 },
-  { xPct: 24, yPct: 46, heightPct: 7 },
-  { xPct: 40, yPct: 46, heightPct: 7 },
-  { xPct: 60, yPct: 46, heightPct: 7 },
-  { xPct: 76, yPct: 46, heightPct: 7 },
-  { xPct: 92, yPct: 46, heightPct: 7 },
-  // Row C
-  { xPct: 18, yPct: 54, heightPct: 7.5 },
-  { xPct: 34, yPct: 54, heightPct: 7.5 },
-  { xPct: 50, yPct: 54, heightPct: 7.5 },
-  { xPct: 66, yPct: 54, heightPct: 7.5 },
-  { xPct: 82, yPct: 54, heightPct: 7.5 },
-  // Row D
-  { xPct: 10, yPct: 62, heightPct: 8 },
-  { xPct: 26, yPct: 62, heightPct: 8 },
-  { xPct: 42, yPct: 62, heightPct: 8 },
-  { xPct: 58, yPct: 62, heightPct: 8 },
-  { xPct: 74, yPct: 62, heightPct: 8 },
-  { xPct: 90, yPct: 62, heightPct: 8 },
-  // Row E
-  { xPct: 18, yPct: 70, heightPct: 8.5 },
-  { xPct: 34, yPct: 70, heightPct: 8.5 },
-  { xPct: 50, yPct: 70, heightPct: 8.5 },
+  // Upper floor, but away from Darshita/cake/stage center.
+  { xPct: 20, yPct: 52, heightPct: 7.5 },
+  { xPct: 30, yPct: 54, heightPct: 7.5 },
+  { xPct: 70, yPct: 54, heightPct: 7.5 },
+  { xPct: 80, yPct: 52, heightPct: 7.5 },
+
+  // Middle floor, left and right sides.
+  { xPct: 18, yPct: 62, heightPct: 8 },
+  { xPct: 32, yPct: 62, heightPct: 8 },
+  { xPct: 68, yPct: 62, heightPct: 8 },
+  { xPct: 82, yPct: 62, heightPct: 8 },
+
+  // Main open floor.
+  { xPct: 24, yPct: 70, heightPct: 8.5 },
+  { xPct: 38, yPct: 70, heightPct: 8.5 },
+  { xPct: 52, yPct: 70, heightPct: 8.5 },
   { xPct: 66, yPct: 70, heightPct: 8.5 },
-  { xPct: 82, yPct: 70, heightPct: 8.5 },
-  // Row F — front of the room.
-  { xPct: 26, yPct: 78, heightPct: 9 },
-  { xPct: 42, yPct: 78, heightPct: 9 },
-  { xPct: 58, yPct: 78, heightPct: 9 },
-  { xPct: 74, yPct: 78, heightPct: 9 },
+  { xPct: 80, yPct: 70, heightPct: 8.5 },
+
+  // Front floor, but not too low / not hidden by bottom controls.
+  { xPct: 22, yPct: 78, heightPct: 9 },
+  { xPct: 36, yPct: 78, heightPct: 9 },
+  { xPct: 50, yPct: 76, heightPct: 8.8 },
+  { xPct: 64, yPct: 78, heightPct: 9 },
+  { xPct: 78, yPct: 78, heightPct: 9 },
+
+  // Extra safe side slots for more guests.
+  { xPct: 26, yPct: 58, heightPct: 7.8 },
+  { xPct: 74, yPct: 58, heightPct: 7.8 },
+  { xPct: 42, yPct: 82, heightPct: 9 },
+  { xPct: 58, yPct: 82, heightPct: 9 },
 ];
 
 function hashStr(s: string): number {

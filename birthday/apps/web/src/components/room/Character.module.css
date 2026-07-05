@@ -4,6 +4,23 @@
   pointer-events: none; /* never blocks room panning */
 }
 
+/* Only set when a character has an onClick (currently just Darshita). */
+.interactive {
+  pointer-events: auto;
+  cursor: pointer;
+}
+
+.interactive:hover .sprite,
+.interactive:focus-visible .sprite {
+  filter: brightness(1.1);
+}
+
+.interactive:focus-visible {
+  outline: 2px solid var(--c-lavender-300);
+  outline-offset: 4px;
+  border-radius: 8px;
+}
+
 .sprite {
   height: 100%;
   display: flex;

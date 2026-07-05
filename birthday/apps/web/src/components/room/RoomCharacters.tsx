@@ -44,7 +44,12 @@ function toCharacter(g: NormalizedGuest, idPrefix: string): CharacterData {
   };
 }
 
-export function RoomCharacters() {
+interface RoomCharactersProps {
+  /** Fires when Darshita's own character is clicked (opens the About modal). */
+  onHostClick?: () => void;
+}
+
+export function RoomCharacters({ onHostClick }: RoomCharactersProps) {
   const remoteGuests = usePartyGuests();
   const [localSelf, setLocalSelf] = useState<NormalizedGuest | null>(null);
 
@@ -97,9 +102,18 @@ export function RoomCharacters() {
 
   return (
     <>
-      {CHARACTERS.map((c) => (
-        <Character key={c.id} {...c} />
-      ))}
+      {CHARACTERS.map((c) =>
+        c.isHost ? (
+          <Character
+            key={c.id}
+            {...c}
+            onClick={onHostClick}
+            ariaLabel="About this party — click to read Darshita's message"
+          />
+        ) : (
+          <Character key={c.id} {...c} />
+        ),
+      )}
       {remoteChars.map((c) => (
         <Character key={c.id} {...c} />
       ))}
