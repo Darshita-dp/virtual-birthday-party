@@ -6,10 +6,10 @@ import { getSupabaseClient } from "@/lib/supabaseClient";
 /**
  * Shared party guests (M15). Fetches all joined guests from Supabase and
  * subscribes to realtime inserts/updates so everyone in the room sees new
- * arrivals live. Positions are computed deterministically from `session_id`
- * (so every viewer reads the same spot) and stored on the row at join time.
- * When Supabase is not configured, `usePartyGuests` returns [] and `joinParty`
- * is a no-op — the room falls back to host + local self guest.
+ * arrivals live. Positions are assigned from a fixed slot table at join time
+ * (see `GUEST_SLOTS` below) and stored on the row. When Supabase is not
+ * configured, `usePartyGuests` returns [] and `joinParty` is a no-op — the
+ * room falls back to host + local self guest.
  */
 
 export interface PartyGuestRow {
@@ -29,24 +29,53 @@ export interface GuestPlacement {
   heightPct: number;
 }
 
-// Curated open-floor zones (spirit of the earlier hand-tuned sample positions):
-// off the cake, off Darshita's column, off the piano/fountain/seating.
-const GUEST_ZONES: GuestPlacement[] = [
-  { xPct: 35, yPct: 40, heightPct: 6.5 },
-  { xPct: 68, yPct: 40, heightPct: 6.5 },
-  { xPct: 25, yPct: 52, heightPct: 7.5 },
-  { xPct: 73, yPct: 52, heightPct: 7.5 },
-  { xPct: 40, yPct: 66, heightPct: 8 },
-  { xPct: 64, yPct: 64, heightPct: 8 },
-  { xPct: 30, yPct: 72, heightPct: 8 },
-  { xPct: 70, yPct: 72, heightPct: 8 },
-  { xPct: 48, yPct: 74, heightPct: 8 },
-  { xPct: 20, yPct: 62, heightPct: 7.5 },
+// Fixed, curated guest slots — exact coordinates, spaced far enough apart
+// (>=16% in x within a row, 8% between rows, with rows staggered) that two
+// avatars can never visually overlap. This replaces the old hash+jitter
+// scheme: jitter picked a *zone* deterministically but then nudged the guest
+// by a few percent inside it, so two different session_ids could land in the
+// same zone with overlapping jitter and collide. A slot is either free or
+// taken — no fuzzy math, so collisions are structurally impossible as long as
+// there are enough slots for the guests currently in the room. Height grows
+// slightly for lower rows for a simple depth/perspective feel.
+const GUEST_SLOTS: GuestPlacement[] = [
+  // Row A — just below the host, avoiding her column.
+  { xPct: 15, yPct: 38, heightPct: 6.5 },
+  { xPct: 32, yPct: 38, heightPct: 6.5 },
+  { xPct: 68, yPct: 38, heightPct: 6.5 },
+  { xPct: 85, yPct: 38, heightPct: 6.5 },
+  // Row B
+  { xPct: 8, yPct: 46, heightPct: 7 },
+  { xPct: 24, yPct: 46, heightPct: 7 },
+  { xPct: 40, yPct: 46, heightPct: 7 },
+  { xPct: 60, yPct: 46, heightPct: 7 },
+  { xPct: 76, yPct: 46, heightPct: 7 },
+  { xPct: 92, yPct: 46, heightPct: 7 },
+  // Row C
+  { xPct: 18, yPct: 54, heightPct: 7.5 },
+  { xPct: 34, yPct: 54, heightPct: 7.5 },
+  { xPct: 50, yPct: 54, heightPct: 7.5 },
+  { xPct: 66, yPct: 54, heightPct: 7.5 },
+  { xPct: 82, yPct: 54, heightPct: 7.5 },
+  // Row D
+  { xPct: 10, yPct: 62, heightPct: 8 },
+  { xPct: 26, yPct: 62, heightPct: 8 },
+  { xPct: 42, yPct: 62, heightPct: 8 },
+  { xPct: 58, yPct: 62, heightPct: 8 },
+  { xPct: 74, yPct: 62, heightPct: 8 },
+  { xPct: 90, yPct: 62, heightPct: 8 },
+  // Row E
+  { xPct: 18, yPct: 70, heightPct: 8.5 },
+  { xPct: 34, yPct: 70, heightPct: 8.5 },
+  { xPct: 50, yPct: 70, heightPct: 8.5 },
+  { xPct: 66, yPct: 70, heightPct: 8.5 },
+  { xPct: 82, yPct: 70, heightPct: 8.5 },
+  // Row F — front of the room.
+  { xPct: 26, yPct: 78, heightPct: 9 },
+  { xPct: 42, yPct: 78, heightPct: 9 },
+  { xPct: 58, yPct: 78, heightPct: 9 },
+  { xPct: 74, yPct: 78, heightPct: 9 },
 ];
-
-function clamp(v: number, lo: number, hi: number): number {
-  return Math.min(hi, Math.max(lo, v));
-}
 
 function hashStr(s: string): number {
   let h = 2166136261;
@@ -57,20 +86,71 @@ function hashStr(s: string): number {
   return h >>> 0;
 }
 
-/** Deterministic placement from session_id: same guest → same spot everywhere. */
+/**
+ * Deterministic *guess* from session_id, used only for the local optimistic
+ * render before the real slot assignment is confirmed by Supabase (or as the
+ * final position when Supabase isn't configured at all, in which case there's
+ * no cross-guest collision to worry about — only the local visitor renders).
+ * The authoritative, collision-free slot is assigned by `joinParty` below.
+ */
 export function computePlacement(sessionId: string): GuestPlacement {
   const h = hashStr(sessionId);
-  const zone = GUEST_ZONES[h % GUEST_ZONES.length] ?? GUEST_ZONES[0]!;
-  const jitterX = (((h >> 8) % 61) - 30) / 10; // -3..3
-  const jitterY = (((h >> 16) % 41) - 20) / 10; // -2..2
-  return {
-    xPct: clamp(zone.xPct + jitterX, 8, 92),
-    yPct: clamp(zone.yPct + jitterY, 36, 82),
-    heightPct: zone.heightPct + 3,
-  };
+  return GUEST_SLOTS[h % GUEST_SLOTS.length] ?? GUEST_SLOTS[0]!;
 }
 
-/** Upsert the current visitor into party_guests on Enter Party (no-op if unconfigured). */
+// Below this distance (in percent-space, x/y treated as a flat plane) two
+// guests are considered visually "too close". Chosen below the smallest gap
+// between any two curated GUEST_SLOTS (~10.6%) so the slots never block each
+// other, but well above typical old jitter offsets, which landed guests
+// within a few percent of each other — that gap is exactly the bug this fix
+// closes.
+const MIN_SAFE_DISTANCE = 10;
+
+function distance(a: { x: number; y: number }, b: { x: number; y: number }): number {
+  const dx = a.x - b.x;
+  const dy = a.y - b.y;
+  return Math.sqrt(dx * dx + dy * dy);
+}
+
+/**
+ * Chooses a slot for a brand-new guest given everyone currently in the room
+ * (including pre-existing rows placed by the old zone+jitter logic, which
+ * won't line up exactly with a GUEST_SLOTS entry — so this checks proximity,
+ * not exact position, to stay safe against that legacy data without touching
+ * it). Prefers the first slot that isn't too close to anyone; if the room is
+ * completely full, falls back to whichever slot is farthest from its nearest
+ * neighbor (the least crowded spot available) rather than erroring.
+ */
+function pickSlotForNewGuest(existing: { x_pct: number; y_pct: number }[]): GuestPlacement {
+  const points = existing.map((r) => ({ x: Number(r.x_pct), y: Number(r.y_pct) }));
+
+  for (const slot of GUEST_SLOTS) {
+    const tooClose = points.some((p) => distance(p, { x: slot.xPct, y: slot.yPct }) < MIN_SAFE_DISTANCE);
+    if (!tooClose) return slot;
+  }
+
+  let best = GUEST_SLOTS[0]!;
+  let bestNearest = -Infinity;
+  for (const slot of GUEST_SLOTS) {
+    const nearest =
+      points.length === 0
+        ? Infinity
+        : Math.min(...points.map((p) => distance(p, { x: slot.xPct, y: slot.yPct })));
+    if (nearest > bestNearest) {
+      bestNearest = nearest;
+      best = slot;
+    }
+  }
+  return best;
+}
+
+/** Upsert the current visitor into party_guests on Enter Party (no-op if unconfigured).
+ * Live-safe: never deletes or resets rows, and never moves a guest who's already
+ * joined. Re-fetches current guests first — if this session_id already has a row,
+ * its existing x_pct/y_pct/height_pct is reused as-is (re-RSVP doesn't relocate
+ * them); otherwise `pickSlotForNewGuest` assigns a spot that isn't too close to
+ * anyone currently in the room, including guests placed by the old zone+jitter
+ * logic before this fix shipped. */
 export async function joinParty(input: {
   sessionId: string;
   name: string;
@@ -78,8 +158,24 @@ export async function joinParty(input: {
 }): Promise<void> {
   const sb = getSupabaseClient();
   if (!sb) return;
-  const pos = computePlacement(input.sessionId);
   try {
+    const { data } = await sb.from("party_guests").select("session_id, x_pct, y_pct, height_pct");
+    const rows = (data ?? []) as {
+      session_id: string;
+      x_pct: number;
+      y_pct: number;
+      height_pct: number;
+    }[];
+
+    const existingRow = rows.find((r) => r.session_id === input.sessionId);
+    const pos: GuestPlacement = existingRow
+      ? {
+          xPct: Number(existingRow.x_pct),
+          yPct: Number(existingRow.y_pct),
+          heightPct: Number(existingRow.height_pct),
+        }
+      : pickSlotForNewGuest(rows.filter((r) => r.session_id !== input.sessionId));
+
     await sb.from("party_guests").upsert(
       {
         session_id: input.sessionId,
