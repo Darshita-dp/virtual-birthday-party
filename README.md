@@ -10,6 +10,10 @@
 
 ---
 
+## Demo
+
+![Demo](birthday/docs/screenshots/Demo.gif)
+
 ## Highlights
 
 - 🎨 **Fully original visual identity.** A magical purple-night pixel garden — 400+
