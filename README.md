@@ -12,7 +12,7 @@
 
 ## Demo
 
-![Demo](birthday/docs/screenshots/Demo.gif)
+![Virtual Birthday Party demo](birthday/docs/screenshots/demo.gif)
 
 ## Highlights
 
@@ -38,11 +38,11 @@
 
 | Landing | RSVP | Room |
 |---|---|---|
-| ![landing](docs/screenshots/01-landing.png) | ![rsvp](docs/screenshots/02-rsvp.png) | ![room](docs/screenshots/03-room.png) |
+| ![Landing page](birthday/docs/screenshots/01-landing.png)| ![RSVP modal](birthday/docs/screenshots/02-rsvp.png) | ![Party room](birthday/docs/screenshots/03-party-room.png) |
 
 | Wishes | Celebrate | Music |
 |---|---|---|
-| ![wishes](docs/screenshots/04-wishes.png) | ![celebrate](docs/screenshots/05-celebrate.png) | ![music](docs/screenshots/06-music.png) |
+| ![Celebration](birthday/docs/screenshots/04-celebration.png) | ![Wishes panel](birthday/docs/screenshots/05-wishes.png) | ![About this party](birthday/docs/screenshots/06-about-party.png) |
 
 ## Tech Stack
 
@@ -61,10 +61,10 @@
 ## Features
 
 **Entry**
-- Invitation landing with drifting SVG clouds, twinkling stars, first-click
-  audio unlock, and a smooth fade transition to the room.
-- RSVP modal with a live-search-free 15-avatar grid, name validation, and
-  Enter-to-continue.
+- Illustrated birthday invitation landing page with a magical pixel-art venue background.
+- Real overlay buttons for accepting the invite and entering the RSVP flow.
+- RSVP modal with name entry, avatar selection, validation, and Enter-to-continue support.
+- Mobile portrait rotate prompt so phone users experience the site in landscape mode.
 
 **Room**
 - Full room background rendered at natural resolution — never cropped.
@@ -93,10 +93,11 @@
 
 ## Architecture
 
-Client-only for now. All state (guest session, wishes, music preference) lives
-in the browser's `localStorage`, so the site works entirely without a backend.
-Realtime, presence, and DB persistence are **designed** in [ARCHITECTURE.md](ARCHITECTURE.md)
-and scoped for later milestones (Colyseus + Supabase).
+The app uses a Next.js frontend with Supabase for realtime shared state.
+
+Visitors enter through the invitation page, create a local browser session, choose an avatar, and join the party room. On join, the guest is saved to Supabase and rendered for every connected visitor. Wishes are also stored in Supabase and update live across browsers.
+
+The app still uses `localStorage` for lightweight client-side session memory, so returning visitors can keep their name/avatar without creating duplicate guest rows.
 
 ```
 apps/
