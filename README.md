@@ -40,7 +40,7 @@
 |---|---|---|
 | ![Landing page](birthday/docs/screenshots/01-landing.png)| ![RSVP modal](birthday/docs/screenshots/02-rsvp.png) | ![Party room](birthday/docs/screenshots/03-party-room.png) |
 
-| Wishes | Celebrate | Music |
+| Wishes | Celebrate | About |
 |---|---|---|
 | ![Celebration](birthday/docs/screenshots/04-celebration.png) | ![Wishes panel](birthday/docs/screenshots/05-wishes.png) | ![About this party](birthday/docs/screenshots/06-about-party.png) |
 
