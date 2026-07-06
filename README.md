@@ -1,8 +1,14 @@
-# Virtual Birthday Party — Multiplayer Memory Capsule 🎂✨
+# Virtual Birthday Party — Multiplayer Memory Capsule 🎂
 
 A real-time virtual birthday party web app where friends and family can open a shared link, accept the invitation, choose an avatar, join the party room, appear with their name tag, leave birthday wishes, and become part of a shared memory capsule.
 
 🌐 **Live Demo:** https://virtual-birthday-party-mu.vercel.app
+
+---
+
+## Demo
+
+![Virtual Birthday Party demo](birthday/docs/screenshots/demo.gif)
 
 ---
 
@@ -17,29 +23,13 @@ This little room is my way of turning distance into connection — a place where
 ---
 ## Preview
 
-### Invitation
+| Invitation | RSVP and Avatar Selection | Multiplayer Party Room |
+|---|---|---|
+| ![Landing page](birthday/docs/screenshots/01-landing.png) | ![RSVP modal](birthday/docs/screenshots/02-rsvp.png) | ![Party room](birthday/docs/screenshots/03-party-room.png) |
 
-![Landing page](birthday/docs/screenshots/01-landing.png)
-
-### RSVP and Avatar Selection
-
-![RSVP modal](birthday/docs/screenshots/02-rsvp.png)
-
-### Multiplayer Party Room
-
-![Party room](birthday/docs/screenshots/03-party-room.png)
-
-### Celebration Moment
-
-![Celebration](birthday/docs/screenshots/04-celebration.png)
-
-### Shared Wishes
-
-![Wishes panel](birthday/docs/screenshots/05-wishes.png)
-
-### About This Party
-
-![About this party](birthday/docs/screenshots/06-about-party.png)
+| Celebration Moment | Shared Wishes | About This Party |
+|---|---|---|
+| ![Celebration](birthday/docs/screenshots/04-celebration.png) | ![Wishes panel](birthday/docs/screenshots/05-wishes.png) | ![About this party](birthday/docs/screenshots/06-about-party.png) |
 
 ---
 
